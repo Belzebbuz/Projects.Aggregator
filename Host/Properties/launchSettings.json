@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "Host": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5195"
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
+}

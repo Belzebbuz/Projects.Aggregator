@@ -1,0 +1,6 @@
+﻿@page "/update/{ProjectId}"
+@using Clients.MAUI.Pages.SharedForms
+
+@if(_loaded){
+    <EditProjectForm ProjectDto=@_updateRequest OnSubmit="SubmitAsync" SubmitButtonText="Сохранить"/>
+}

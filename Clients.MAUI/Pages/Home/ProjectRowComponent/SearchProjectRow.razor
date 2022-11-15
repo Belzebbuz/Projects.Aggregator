@@ -1,0 +1,31 @@
+﻿@using SharedLibrary.ApiMessages.Projects.Dto
+
+<MudPaper Height="70px" Elevation="3" Class="mt-1 pa-4">
+    <MudGrid>
+        <MudItem xs="3">
+            <MudText Class="mt-2">@Project.Name</MudText>
+        </MudItem>
+        <MudItem xs="3">
+            <MudText Class="mt-2">@Project.LastModifiedOn</MudText>
+        </MudItem>
+        <MudItem xs="4">
+            @if (Project.Tags.Count > 0)
+            {
+                foreach (var tag in Project.Tags.Take(3))
+                {
+                    <MudChip Color="Color.Default">@tag.Value</MudChip>
+                }
+            }
+        </MudItem>
+        <MudItem Class="align-content-end" xs="2">
+            <MudButton Color="Color.Default" Variant="Variant.Outlined" OnClick="GoToProjectDetails">Подробнее</MudButton>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+@code {
+    [Parameter] public ProjectShortDto Project { get; set; }
+    public void GoToProjectDetails()
+    {
+        _navManager.NavigateTo($"projects/{Project.Id}");
+    }
+}

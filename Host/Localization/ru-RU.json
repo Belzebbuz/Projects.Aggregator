@@ -1,0 +1,14 @@
+{
+	"auth.failed": "Пользователь не найден.",
+	"caching.added": "Cache Added : {0}",
+	"caching.refreshed": "Cache Refreshed : {0}",
+	"identity.usernotfound": "Пользователь не найден.",
+	"identity.usernotactive": "Пользователь не активен. Обратитесь к администратору",
+	"identity.emailnotconfirmed": "E-Mail не подтвержден.",
+	"identity.invalidcredentials": "Неверный email или пароль.",
+	"identity.invalidtoken": "Неверный токен.",
+	"identity.invalidrefreshtoken": "Invalid Refresh Token.",
+	"identity.failtoggleadmin": "Невозможно заблокировать пользователя с ролью администратор",
+	"identity.failrootuserdisableadmin": "Нельзя убрать роль администратора у главного пользователя",
+	"entity.notfound": "{0} {1} Not Found."
+}

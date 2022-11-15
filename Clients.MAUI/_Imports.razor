@@ -1,0 +1,28 @@
+﻿@using System.Net.Http
+@using Clients.MAUI.Application.Contracts.Services
+@using Clients.MAUI.Application.Contracts.Utilites
+@using Clients.MAUI.Infrastructure.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.JSInterop
+@using Clients.MAUI
+@using Clients.MAUI.Shared
+@using MudBlazor
+@using Microsoft.AspNetCore.Components.Authorization
+@using Blazored.FluentValidation
+
+
+@attribute [Authorize]
+
+@inject IFolderPicker _folderPicker
+@inject IFilePicker _filePicker
+@inject IAuthenticationService _authService
+@inject IIdentityService _identityService
+@inject IProjectService _projectService
+@inject ISnackbar _snackBar
+@inject IDialogService _dialogService
+@inject LocalAuthenticationStateProvider _authStateProvider
+@inject NavigationManager _navManager

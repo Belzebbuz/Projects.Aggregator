@@ -1,0 +1,22 @@
+﻿@page "/createProject"
+@using Clients.MAUI.Pages.SharedForms
+@using Clients.MAUI.Utilities
+@using SharedLibrary.ApiMessages.Projects.Dto
+@using SharedLibrary.ApiMessages.Projects.M011
+
+
+<EditProjectForm ProjectDto="@_createProjectModel" OnSubmit="SubmitAsync" SubmitButtonText="Создать"/>
+
+@code{
+    private readonly M011Request _createProjectModel = new();
+
+	public async Task SubmitAsync()
+	{
+		var result = await _projectService.CreateProjectAsync(_createProjectModel);
+		_snackBar.HandleResult(result, () =>
+		{
+			_navManager.NavigateTo("/");
+		});
+
+	}
+}

@@ -1,0 +1,13 @@
+mode: Mainline
+major-version-bump-message: '\+\s*major'
+minor-version-bump-message: '\+\s*minor'
+patch-version-bump-message: '\+\s*patch'
+no-bump-message: '\+semver:\s*(none|skip)'
+branches: 
+ master:
+  tag: ''
+  increment: Patch
+  is-mainline: true
+ignore:
+  sha: []
+merge-message-formats: {}

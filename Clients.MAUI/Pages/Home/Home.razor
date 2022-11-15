@@ -1,0 +1,60 @@
+﻿@page "/"
+@using Clients.MAUI.Pages.Home.Loading
+@using Clients.MAUI.Pages.Home.ProjectCard
+@using Clients.MAUI.Pages.Home.ProjectRowComponent
+<MudGrid Style="height: 95vh" Class="fade-in">
+    <MudItem xs="12" Class="slide-top align-self-start">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudAutocomplete T="string"
+                                 @bind-Value="_selectedSearchValue"
+                                 SearchFunc="@SearchProjectsAsync"
+                                 ResetValueOnEmptyText=true
+                                 CoerceValue=true
+                                 Variant="Variant.Outlined"
+                                 Adornment="Adornment.End"
+                                 AdornmentIcon="@Icons.Filled.Search"
+                                 AdornmentColor="Color.Default" />
+            </MudItem>
+            @if (!_searchMode)
+            {
+                <MudItem xs="12" Class="mt-3 slide-top" Style="--delay: 0.1s">
+                    <ProjectRow Loaded=@_loaded
+                            Class="px-4 d-flex flex-nowrap gap-4 overflow-auto align-center"
+                            Height="270px"
+                            Projects="_webProjects" />
+                </MudItem>
+                <MudItem xs="12" Class="slide-top" Style="--delay: 0.2s">
+                    <ProjectRow Loaded=@_loaded
+                            Class="px-4 d-flex flex-nowrap gap-4 overflow-auto align-center"
+                            Height="270px"
+                            Projects="_desktopProjects" />
+                </MudItem>
+            }
+            else
+            {
+                if (_searchAllProjects.Count > 0)
+                {
+                    int animationDelay = 1;
+                    foreach (var project in _searchAllProjects)
+                    {
+                        <MudItem xs="12" Class="slide-top" Style=@($"--delay: 0.0{animationDelay}s;")>
+                            <SearchProjectRow Project=@project />
+                        </MudItem>
+                        animationDelay++;
+                    }
+
+                    animationDelay = 0;
+                }
+            }
+        </MudGrid>
+
+    </MudItem>
+    @if (_searchMode)
+    {
+        <MudItem Class="d-flex align-self-end justify-center fade-in" xs="12">
+            <MudPagination Count="@_pageCount" SelectedChanged="SearchProjectsBySearchStringValue" />
+        </MudItem>
+    }
+</MudGrid>
+

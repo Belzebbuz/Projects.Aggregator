@@ -1,0 +1,40 @@
+﻿@page "/register"
+@layout MainLayout
+@attribute [AllowAnonymous]
+
+<EditForm Model="@_registerRequest" OnValidSubmit="SubmitAsync">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <MudGrid>
+        <MudItem xs="12">
+            <div class="d-flex justify-center">
+                <MudText Typo="Typo.h4">Регистрация</MudText>
+            </div>
+        </MudItem>
+        <MudItem xs="12">
+            <div class="d-flex justify-center">
+                <MudText>Уже есть аккаунт? <MudLink Href="/login">Вход</MudLink></MudText>
+            </div>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField For="@(() => _registerRequest.FirstName)" @bind-Value="_registerRequest.FirstName" Label="Имя" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField For="@(() => _registerRequest.LastName)" @bind-Value="_registerRequest.LastName" Label="Фамилия" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="6">
+            <MudTextField T="string" Label="E-mail" @bind-Value="_registerRequest.Email" For="@(() => _registerRequest.Email)" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="6">
+            <MudTextField T="string" Label="Номер телефона" @bind-Value="_registerRequest.PhoneNumber" For="@(() => _registerRequest.PhoneNumber)" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="6">
+            <MudTextField For="@(() => _registerRequest.Password)" InputType="@_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" @bind-Value="_registerRequest.Password" Label="Пароль" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="6">
+            <MudTextField For="@(() => _registerRequest.ConfirmPassword)" InputType="InputType.Password" @bind-Value="_registerRequest.ConfirmPassword" Label="Повторите пароль" />
+        </MudItem>
+        <MudItem xs="12" Class="d-flex justify-center">
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Disabled="@(!_validated)" Color="Color.Primary" Size="Size.Large" Style="width: 100%;">Регистрация</MudButton>
+        </MudItem>
+    </MudGrid>
+</EditForm>

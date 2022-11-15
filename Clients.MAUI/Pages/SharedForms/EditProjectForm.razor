@@ -1,0 +1,81 @@
+﻿@using SharedLibrary.ApiMessages.Projects.Dto
+<EditForm Model="@ProjectDto" OnValidSubmit="SubmitAsync">
+    <FluentValidationValidator @ref="@_fluentValidationValidator" />
+    <MudGrid Class="fade-in">
+        <MudItem xs="12">
+            <MudTextField For="@(() => ProjectDto.Name)" @bind-Value="ProjectDto.Name"
+                          Label="Название" Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField For="@(() => ProjectDto.ExeFileName)" @bind-Value="ProjectDto.ExeFileName"
+                          Label="Точное имя исполняемого файла"
+                          Placeholder="Client.exe"
+                          Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField Lines="3" For="@(() => ProjectDto.Description)" @bind-Value="ProjectDto.Description"
+                          Label="Описание программы"
+                          Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField Lines="3" For="@(() => ProjectDto.SystemRequirements)" @bind-Value="ProjectDto.SystemRequirements"
+                          Label="Системные требования"
+                          Placeholder="Windows 10, SQLServer, .NET 3.1"
+                          Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" Class="d-flex align-center justify-start gap-4">
+            @if (!ProjectDto.Tags.Any())
+            {
+                <MudTooltip Text="Нужно добавить хотя бы один тег">
+                    <MudIcon Icon="@Icons.Material.Filled.Error" Color="Color.Error" />
+                </MudTooltip>
+            }
+            @foreach (var tag in ProjectDto.Tags)
+            {
+                <MudChip Value="tag" Color="Color.Default" OnClose="Closed">@tag?.Value</MudChip>
+            }
+
+            <MudAutocomplete Class="mt-5"
+                             Style="width: 200px;"
+                             T="TagDto"
+                             ResetValueOnEmptyText=true
+                             Margin="Margin.Dense"
+                             HelperText="Tags: Web, Test ..."
+                             Placeholder="Desktop"
+                             Label="Поиск тегов"
+                             Variant="Variant.Outlined"
+                             AdornmentIcon="@Icons.Material.Filled.Search"
+                             SearchFunc="@SearchTagByNameAsync"
+                             ToStringFunc="@(t => t == null ? null : t.Value)"
+                             ValueChanged="OnSearchTagValueChangedAsync">
+
+                <ItemTemplate Context="tagSearchContext">
+                    <div class="d-flex align-center">
+                        @if (tagSearchContext.Id == default)
+                        {
+                            <MudTooltip Text="Будет создан">
+                                <MudIcon Class="ps-n4 mr-3 mt-2" Icon="@Icons.Material.Outlined.Add" Size="Size.Small" />
+                            </MudTooltip>
+                        }
+                        <MudText>@tagSearchContext.Value</MudText>
+                    </div>
+                </ItemTemplate>
+
+                <NoItemsTemplate>
+                    <MudText Align="Align.Center" Class="px-4 py-1">
+                        Теги не найдены
+                    </MudText>
+                </NoItemsTemplate>
+            </MudAutocomplete>
+        </MudItem>
+        <MudItem xs="12" Class="d-flex justify-center">
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Disabled="@(!_validated)"
+                       Color="Color.Primary"
+                       Size="Size.Large">@SubmitButtonText</MudButton>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+                        

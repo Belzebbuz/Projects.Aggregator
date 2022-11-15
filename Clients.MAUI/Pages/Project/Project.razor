@@ -1,0 +1,72 @@
+﻿@page "/projects/{Id}"
+@using Clients.MAUI.Pages.Project.Loading
+@using Clients.MAUI.Pages.Project.Releases
+
+<MudGrid Class="fade-in">
+    @if (!_isLoaded)
+    {
+        <MainPageProjectLoading />
+    }
+    else
+    {
+        <MudItem Class="slide-top" Style="--delay: 0.1s" xs="8">
+            <MudText Typo="Typo.h3">@_project.Name</MudText>
+            <MudText Class="pl-2" Typo="Typo.body2">@($"Последнее обновление {_project.LastModifiedOn} от {_project.LastModifiedByEmail ?? "Anonymous"}")</MudText>
+            @if (_project.Tags.Count > 0)
+            {
+                foreach (var tag in _project.Tags)
+                {
+                    <MudChip Class="mt-1" Color="Color.Default">@tag.Value</MudChip>
+                }
+            }
+        </MudItem>
+        <MudItem Class="slide-top d-flex gap-4 mt-2  justify-end" Style="--delay: 0.05s" xs="4">
+            <MudTooltip Text="Редактировать" Arrow="true" Placement="Placement.Top">
+                <MudIconButton OnClick=@(() => _navManager.NavigateTo($"/update/{_project.Id.ToString()}"))
+                           Class="align-self-start mt-n1"
+                           Icon="@Icons.Material.Filled.Edit"
+                           Size="Size.Medium" />
+            </MudTooltip>
+            <MudButton Class="align-self-start" Variant="Variant.Filled" Color="Color.Default">Установить</MudButton>
+        </MudItem>
+        <MudItem Class="slide-top" Style="--delay: 0.1s" xs="12">
+            <MudTabs Elevation="3" Rounded=true>
+                <MudTabPanel Text="Описание">
+                    <MudPaper Height="150px" Class="pa-6 overflow-auto">
+                        <MudText Align="Align.Start"  Style="white-space: pre-line;" Typo="Typo.body1">@_project.Description</MudText>
+                    </MudPaper>
+                </MudTabPanel>
+                <MudTabPanel Text="Системные требования">
+                    <MudPaper Height="150px" Class="pa-6">
+                        <MudText Typo="Typo.body1">@_project.SystemRequirements</MudText>
+                    </MudPaper>
+                </MudTabPanel>
+            </MudTabs>
+        </MudItem>
+        <MudItem Class="slide-top mt-1 align-center d-flex justify-space-between" Style="--delay: 0.15s" xs="12">
+            <MudText Typo="Typo.h5">Последние релизы</MudText>
+            <MudTooltip Text="Загрузить новый релиз" Arrow="true" Placement="Placement.Bottom">
+                @if (_processingLoadToServer)
+                {
+                    <MudProgressCircular Color="Color.Default" Size="Size.Medium" Indeterminate="true" />
+                }
+                else
+                {
+                    <MudIconButton Size="Size.Medium" Icon="@Icons.Material.Filled.UploadFile" OnClick=@UploadFileAsync />
+                }
+            </MudTooltip>
+        </MudItem>
+        <MudItem Class="slide-top" Style="--delay: 0.2s" xs="12">
+            <MudExpansionPanels MultiExpansion="true">
+                @foreach (var release in _project.Releases)
+                {
+                    <ReleaseExpandedPanel OnRequestUpdate=@LoadAsync
+                                  ProjectId=@_project.Id
+                                  Release=@release
+                                  DownloadFileName=@_project.Name />
+                }
+            </MudExpansionPanels>
+        </MudItem>
+    }
+
+</MudGrid>

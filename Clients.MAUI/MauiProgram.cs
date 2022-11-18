@@ -22,8 +22,7 @@ public static class MauiProgram
             });
 
         builder.Services.AddMauiBlazorWebView();
-        builder.Services.AddMudServices();
-        builder.Services.AddSingleton<IFilePicker>(FilePicker.Default);
+        
         builder.Services.AddInfrastructure();
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();

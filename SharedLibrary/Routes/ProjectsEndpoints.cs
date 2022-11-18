@@ -1,15 +1,13 @@
-﻿using App.Shared.ApiMessages.Projects.M015;
+﻿using App.Shared.ApiMessages.Projects.P007;
 using SharedLibrary.ApiMessages.Projects.Dto;
-using SharedLibrary.ApiMessages.Projects.M009;
-using SharedLibrary.ApiMessages.Projects.M011;
-using SharedLibrary.ApiMessages.Projects.M012;
-using SharedLibrary.ApiMessages.Projects.M020;
-using SharedLibrary.ApiMessages.Projects.M021;
-using SharedLibrary.ApiMessages.Projects.M019;
-using SharedLibrary.ApiMessages.Projects.M024;
-using SharedLibrary.ApiMessages.Projects.M025;
+using SharedLibrary.ApiMessages.Projects.P001;
+using SharedLibrary.ApiMessages.Projects.P003;
+using SharedLibrary.ApiMessages.Projects.P004;
+using SharedLibrary.ApiMessages.Projects.P012;
+using SharedLibrary.ApiMessages.Projects.P013;
+using SharedLibrary.ApiMessages.Projects.P011;
+using SharedLibrary.ApiMessages.Projects.P016;
 using SharedLibrary.Wrapper;
-using System;
 
 namespace SharedLibrary.Routes;
 
@@ -34,13 +32,13 @@ public class ProjectsEndpoints
     /// <item>
     /// <strong>POST</strong> - Initial create project
     /// <para>
-    ///		Request - <see cref="M011Request"/>
+    ///		Request - <see cref="P003Request"/>
     /// </para>
     /// </item>
     /// <item>
     /// <strong>PUT</strong> - Update project info
     /// <para>
-    ///		Request - <see cref="M012Request"/>
+    ///		Request - <see cref="P004Request"/>
     /// </para>
     /// </item>
     /// </list>
@@ -49,7 +47,7 @@ public class ProjectsEndpoints
     public const string Base = "api/projects";
 
     /// <summary>
-    /// <strong>GET</strong> - Response <see cref="M009Request"/>
+    /// <strong>GET</strong> - Response <see cref="P001Request"/>
     /// <para>
     /// <strong>DELETE</strong>
     /// </para>
@@ -76,23 +74,18 @@ public class ProjectsEndpoints
 
 	/// <summary>
 	/// <para>
-	/// <strong>POST</strong> - Request <see cref="M024Request"/>
+	/// <strong>POST</strong> - Request <see cref="P016Request"/>
 	/// </para>
 	/// <para>
-	///<strong>PUT</strong> - Request <see cref="M015Request"/>
+	///<strong>PUT</strong> - Request <see cref="P007Request"/>
 	/// </para>
 	/// <para>
-	/// <strong>GET</strong> - Response <see cref="M021Response"/>
+	/// <strong>GET</strong> - Response <see cref="P013Response"/>
 	/// </para>
 	/// </summary>
 	/// <returns></returns>
 	public static string GetTagsRoute() => $"{Base}/tags";
 
-    /// <summary>
-    /// <strong>POST</strong> - Request <see cref="M025Request"/>
-    /// </summary>
-    /// <returns></returns>
-	public static string GetMultipleTagsRoute() => $"{Base}/multiple_tags";
 
 	/// <summary>
 	///  <para>
@@ -115,7 +108,7 @@ public class ProjectsEndpoints
     /// <summary>
     /// <strong>POST</strong>
     /// <para>
-    ///		Request - <see cref="M020Request"/>
+    ///		Request - <see cref="P012Request"/>
     /// </para>
     /// <para>
     ///		Response - wrapped into <see cref="PaginatedResult{T}"/>  <see cref="ProjectShortDto"/>
@@ -125,7 +118,7 @@ public class ProjectsEndpoints
     public static string GetProjectFilterRoute() => $"{Base}/filter";
 
 	/// <summary>
-	/// <strong>POST</strong> - Request <see cref="M019Request"/>
+	/// <strong>POST</strong> - Request <see cref="P011Request"/>
 	/// </summary>
 	/// <returns></returns>
 	public static string GetReleaseNoteRoute() => $"{Base}/releaseNotes";

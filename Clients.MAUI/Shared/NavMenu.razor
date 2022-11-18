@@ -1,10 +1,28 @@
-﻿<MudNavMenu>
+﻿@using SharedLibrary.Authentication
+<MudNavMenu>
     <MudTooltip Arrow=true Placement="Placement.Right" Text="Главная">
         <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Apps">Главная</MudNavLink>
     </MudTooltip>
-    <MudTooltip Arrow=true Placement="Placement.Right" Text="Создать новый проект">
-        <MudNavLink Href="/createProject" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Add" />
+
+     <MudTooltip Arrow=true Placement="Placement.Right" Text="Настройки">
+        <MudNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Settings">Настройки</MudNavLink>
+     </MudTooltip>
+
+    <AuthorizeView Roles="@SHRoles.Dev">
+        <Authorized>
+            <MudTooltip Arrow=true Placement="Placement.Right" Text="Создать новый проект">
+                <MudNavLink Href="/createProject" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Add" />
+            </MudTooltip>
+        </Authorized>
+    </AuthorizeView>
+
+    <AuthorizeView Roles="@SHRoles.Admin">
+        <Authorized>
+            <MudNavLink Href="/adminDashboard" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Groups"></MudNavLink>
+        </Authorized>
+    </AuthorizeView>
+
+    <MudTooltip Arrow=true Placement="Placement.Right" Text="Сообщить об ошибке">
+        <MudNavLink Href="/bugReport" Match="NavLinkMatch.All" Icon="fas fa-bug" />
     </MudTooltip>
-    <MudNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Settings">Настройки</MudNavLink>
-    <MudNavLink Href="/tests" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.PanTool">Главная</MudNavLink>
 </MudNavMenu>

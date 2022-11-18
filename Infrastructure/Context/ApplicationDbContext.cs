@@ -1,6 +1,7 @@
 ﻿using Application.Contracts.Identity;
 using Application.Contracts.Services;
 using Application.Contracts.Services.Events;
+using Domain.Aggregators.Bug;
 using Domain.Aggregators.Project;
 using Domain.Base;
 using Infrastructure.Auditing;
@@ -35,6 +36,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<Release> Releases => Set<Release>();
     public DbSet<Tag> Tags => Set<Tag>();
+    public DbSet<BugReport> BugReports => Set<BugReport>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

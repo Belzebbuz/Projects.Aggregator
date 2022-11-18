@@ -46,7 +46,7 @@ public sealed class Release : AuditableEntity
 
     internal IResult UpdateReleaseNote(string text)
     {
-        ThrowHelper.StringNotEmpty(text, nameof(text));
+        ThrowHelper.StringNotEmpty(text);
         ReleaseNote = text;
         return Result.Success();
     }

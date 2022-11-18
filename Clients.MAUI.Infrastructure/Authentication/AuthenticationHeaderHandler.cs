@@ -1,5 +1,7 @@
 ﻿using Clients.MAUI.Infrastructure.Constants;
+using SharedLibrary.Wrapper;
 using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace Clients.MAUI.Infrastructure.Authentication;
 
@@ -18,7 +20,17 @@ public class AuthenticationHeaderHandler : DelegatingHandler
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
             }
         }
-
-        return await base.SendAsync(request, cancellationToken);
+        try
+        {
+			return await base.SendAsync(request, cancellationToken);
+		}
+		catch (Exception ex)
+        {
+            var errorResult = JsonSerializer.Serialize(Result.Fail(ex.Message));
+            return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+            {
+                Content = new StringContent(errorResult)
+            };
+        }
     }
 }

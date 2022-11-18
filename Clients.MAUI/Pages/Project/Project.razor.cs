@@ -1,3 +1,4 @@
+using Clients.MAUI.Pages.SharedForms.Dialogs;
 using Clients.MAUI.Utilities;
 using Microsoft.AspNetCore.Components;
 using SharedLibrary.ApiMessages.Projects.Dto;
@@ -31,11 +32,14 @@ public partial class Project
 	private bool _processingLoadToServer = false;
 	private async Task UploadFileAsync()
 	{
+		_processingLoadToServer = true;
 		var selectResult = await SelectZipFileAsync();
 		if (selectResult == null)
+		{
+			_processingLoadToServer = false;
 			return;
+		}
 
-		_processingLoadToServer = true;
 		var uploadResult = await _projectService.UploadReleaseAsync(_project.Id, selectResult.FileName,
 			selectResult.FullPath, selectResult.ContentType);
 
@@ -56,5 +60,20 @@ public partial class Project
 			FileTypes = customFileType,
 		};
 		return await _filePicker.PickAsync(options);
+	}
+
+	private async Task DeleteProjectAsync()
+	{
+		var parameters = new DialogParameters
+			{
+				{nameof(DeleteConfirmDialog.ContentText), $"Приложение {_project.Name} со всеми релизами." }
+			};
+		var dialog = _dialogService.Show<DeleteConfirmDialog>("Удаление релиза", parameters, new DialogOptions() { FullWidth = true, CloseButton = true });
+		var dialogResult = await dialog.Result;
+		if (!dialogResult.Cancelled)
+		{
+			var deleteResult = await _projectService.DeleteProjectAsync(_project.Id);
+			_snackBar.HandleResult(deleteResult, () => _navManager.NavigateTo("/"));
+		}
 	}
 }

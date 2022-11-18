@@ -3,7 +3,6 @@
 <MudThemeProvider Theme="_currentTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
-
 <AuthorizeView>
     <NotAuthorized>
         <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
@@ -13,6 +12,7 @@
         </MudContainer>
     </NotAuthorized>
     <Authorized>
+
         <MudLayout>
             <MudDrawer Fixed="true" Elevation="4" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
                 <NavMenu />
@@ -25,4 +25,5 @@
         </MudLayout>
     </Authorized>
 </AuthorizeView>
+
 

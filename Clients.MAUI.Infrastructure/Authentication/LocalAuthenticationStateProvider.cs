@@ -26,13 +26,23 @@ public class LocalAuthenticationStateProvider : AuthenticationStateProvider
         NotifyAuthenticationStateChanged(Task.FromResult(state));
         return state;
     }
+	public void MarkUserAsAuthenticated(string userName)
+	{
+		var authenticatedUser = new ClaimsPrincipal(
+			new ClaimsIdentity(new[]
+			{
+					new Claim(ClaimTypes.Name, userName)
+			}, "apiauth"));
 
-    public void MarkUserAsLoggedOut()
+		var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
+
+		NotifyAuthenticationStateChanged(authState);
+	}
+	public void MarkUserAsLoggedOut()
     {
-        SecureStorage.Remove(StorageConstants.AuthToken);
-        SecureStorage.Remove(StorageConstants.RefreshToken);
-        _httpClient.DefaultRequestHeaders.Authorization = null;
-        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+		var anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
+		var authState = Task.FromResult(new AuthenticationState(anonymousUser));
+		NotifyAuthenticationStateChanged(authState);
     }
 
     private IEnumerable<Claim> GetClaimsFromJwt(string jwt)

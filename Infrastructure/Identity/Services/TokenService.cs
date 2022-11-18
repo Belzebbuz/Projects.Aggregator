@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using SharedLibrary.ApiMessages.Identity.M001;
-using SharedLibrary.ApiMessages.Identity.M002;
+using SharedLibrary.ApiMessages.Identity.ID001;
+using SharedLibrary.ApiMessages.Identity.ID002;
 using SharedLibrary.Authentication;
 using SharedLibrary.Exceptions;
 using SharedLibrary.Wrapper;
@@ -33,51 +33,51 @@ public class TokenService : ITokenService
         _jwtSettings = jwtSettings.Value;
         _securitySettings = securitySettings.Value;
     }
-    public async Task<IResult<M001Response>> GetTokenAsync(M001Request request, string ipAddress, CancellationToken cancellationToken)
+    public async Task<IResult<ID001Response>> GetTokenAsync(ID001Request request, string ipAddress, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(request.Email.Trim().Normalize());
         if (user is null)
         {
-            return await Result<M001Response>.FailAsync(_localizer["auth.failed"]);
+            return await Result<ID001Response>.FailAsync(_localizer["auth.failed"]);
         }
 
         if (!user.IsActive)
         {
-            return await Result<M001Response>.FailAsync(_localizer["identity.usernotactive"]);
+            return await Result<ID001Response>.FailAsync(_localizer["identity.usernotactive"]);
         }
 
         if (_securitySettings.RequireConfirmedAccount && !user.EmailConfirmed)
         {
-            return await Result<M001Response>.FailAsync(_localizer["identity.emailnotconfirmed"]);
+            return await Result<ID001Response>.FailAsync(_localizer["identity.emailnotconfirmed"]);
         }
 
         if (!await _userManager.CheckPasswordAsync(user, request.Password))
         {
-            return await Result<M001Response>.FailAsync(_localizer["identity.invalidcredentials"]);
+            return await Result<ID001Response>.FailAsync(_localizer["identity.invalidcredentials"]);
         }
 
-        return await Result<M001Response>.SuccessAsync(await GenerateTokensAndUpdateUser(user, ipAddress));
+        return await Result<ID001Response>.SuccessAsync(await GenerateTokensAndUpdateUser(user, ipAddress));
     }
 
-    public async Task<IResult<M001Response>> RefreshTokenAsync(M002Request request, string ipAddress)
+    public async Task<IResult<ID001Response>> RefreshTokenAsync(ID002Request request, string ipAddress)
     {
         var userPrincipal = GetPrincipalFromExpiredToken(request.Token);
         string? userEmail = userPrincipal.GetEmail();
         var user = await _userManager.FindByEmailAsync(userEmail);
         if (user is null)
         {
-            return await Result<M001Response>.FailAsync(_localizer["auth.failed"]);
+            return await Result<ID001Response>.FailAsync(_localizer["auth.failed"]);
         }
 
         if (user.RefreshToken != request.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
         {
-            return await Result<M001Response>.FailAsync(_localizer["identity.invalidrefreshtoken"]);
+            return await Result<ID001Response>.FailAsync(_localizer["identity.invalidrefreshtoken"]);
         }
 
-        return await Result<M001Response>.SuccessAsync(await GenerateTokensAndUpdateUser(user, ipAddress));
+        return await Result<ID001Response>.SuccessAsync(await GenerateTokensAndUpdateUser(user, ipAddress));
     }
 
-    private async Task<M001Response> GenerateTokensAndUpdateUser(AppUser user, string ipAddress)
+    private async Task<ID001Response> GenerateTokensAndUpdateUser(AppUser user, string ipAddress)
     {
         var roles = await _userManager.GetRolesAsync(user);
         string token = GenerateJwt(user, ipAddress, roles);
@@ -87,7 +87,7 @@ public class TokenService : ITokenService
 
         await _userManager.UpdateAsync(user);
 
-        return new M001Response(token, user.RefreshToken, user.RefreshTokenExpiryTime);
+        return new ID001Response(token, user.RefreshToken, user.RefreshTokenExpiryTime);
     }
 
     private string GenerateJwt(AppUser user, string ipAddress, IList<string> roles) =>

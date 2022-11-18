@@ -1,13 +1,13 @@
-﻿using App.Shared.ApiMessages.Projects.M015;
+﻿using App.Shared.ApiMessages.Projects.P007;
 using Domain.Aggregators.Project;
 using SharedLibrary;
 using SharedLibrary.ApiMessages.Projects.Dto;
-using SharedLibrary.ApiMessages.Projects.M009;
-using SharedLibrary.ApiMessages.Projects.M011;
-using SharedLibrary.ApiMessages.Projects.M019;
-using SharedLibrary.ApiMessages.Projects.M020;
-using SharedLibrary.ApiMessages.Projects.M021;
-using SharedLibrary.ApiMessages.Projects.M024;
+using SharedLibrary.ApiMessages.Projects.P001;
+using SharedLibrary.ApiMessages.Projects.P003;
+using SharedLibrary.ApiMessages.Projects.P011;
+using SharedLibrary.ApiMessages.Projects.P012;
+using SharedLibrary.ApiMessages.Projects.P013;
+using SharedLibrary.ApiMessages.Projects.P016;
 using SharedLibrary.Routes;
 using SharedLibrary.Wrapper;
 using Shouldly;
@@ -50,7 +50,6 @@ public partial class ApiTests : IDisposable
         content.ShouldNotBeNull();
         content.Succeeded.ShouldBeTrue();
         content.Messages.ShouldNotBeNull();
-        content.Messages.FirstOrDefault().ShouldBe("Ok");
     }
 
     [Fact]
@@ -63,7 +62,7 @@ public partial class ApiTests : IDisposable
 
         var getAppResponse = await _client.GetAsync(ProjectsEndpoints.GetProjectRoute(Guid.Parse(newAppId)));
         getAppResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var getAppResult = await getAppResponse.ToResult<M009Response>();
+        var getAppResult = await getAppResponse.ToResult<P001Response>();
         getAppResult.Succeeded.ShouldBeTrue();
         getAppResult.Data.Name.ShouldBe("Trace-X web app");
         getAppResult.Data.CreatedByEmail.ShouldBe(_rootUserCredentials.Email);
@@ -77,7 +76,7 @@ public partial class ApiTests : IDisposable
         var webTag = tags.Where(x => x.Value == "Web").ToList();
         var appId = await ShouldSuccessCreateNewProject("Trace-X web app", "Cool app",
             "Windows 10", "TXService.exe", webTag);
-        var request = new M011Request("Trace-X web app", "Cool app", "Windows 10", "TXService.exe", webTag);
+        var request = new P003Request("Trace-X web app", "Cool app", "Windows 10", "TXService.exe", webTag);
         var response = await _client.PostAsJsonAsync(ProjectsEndpoints.Base, request);
         var content = await response.ToResult();
         content.Succeeded.ShouldBeFalse();
@@ -90,7 +89,7 @@ public partial class ApiTests : IDisposable
         var tags = await GetDataBaseTags();
         var tagsIds = tags.Select(x => x.Id).ToList();
         await ShouldSuccessCreateNewProject("Trace-X web app", "Cool app", "Windows 10", "TXService.exe", tags);
-        var request = new M011Request("Trace-X web app", "Cool app", "Windows 10", "TXService.exe", tags.ToList());
+        var request = new P003Request("Trace-X web app", "Cool app", "Windows 10", "TXService.exe", tags.ToList());
         var response = await _client.PostAsJsonAsync(ProjectsEndpoints.Base, request);
         var content = await response.ToResult();
         content.Succeeded.ShouldBeFalse();
@@ -116,7 +115,7 @@ public partial class ApiTests : IDisposable
 
         //Get project and find created release
         var projectRequest = await _client.GetAsync(ProjectsEndpoints.GetProjectRoute(Guid.Parse(appId)));
-        var projectResult = await projectRequest.ToResult<M009Response>();
+        var projectResult = await projectRequest.ToResult<P001Response>();
         projectResult.Succeeded.ShouldBeTrue();
         projectResult.Data.ShouldNotBeNull();
         var uploadedRelease = projectResult.Data.Releases.SingleOrDefault(x => x.Id == Guid.Parse(releaseId));
@@ -148,7 +147,7 @@ public partial class ApiTests : IDisposable
         var secondRelease = await UploadRelease(appId, _firstReleaseFilePath);
 
         var projectRequest = await _client.GetAsync(ProjectsEndpoints.GetProjectRoute(Guid.Parse(appId)));
-        var projectResult = await projectRequest.ToResult<M009Response>();
+        var projectResult = await projectRequest.ToResult<P001Response>();
         projectResult.Succeeded.ShouldBeTrue();
         projectResult.Data.ShouldNotBeNull();
         projectResult.Data.Releases.Count.ShouldBe(2);
@@ -169,7 +168,7 @@ public partial class ApiTests : IDisposable
         var fourthRelease = await UploadRelease(appId, _secondReleaseFilePath);
 
         var projectRequest = await _client.GetAsync(ProjectsEndpoints.GetProjectRoute(Guid.Parse(appId)));
-        var projectResult = await projectRequest.ToResult<M009Response>();
+        var projectResult = await projectRequest.ToResult<P001Response>();
         projectResult.Succeeded.ShouldBeTrue();
         projectResult.Data.ShouldNotBeNull();
         projectResult.Data.Releases.Count.ShouldBe(3);
@@ -182,14 +181,16 @@ public partial class ApiTests : IDisposable
         await ShouldSuccessGetAccessTokenResult(_rootUserCredentials.Email, _rootUserCredentials.Password);
         var tags = await GetDataBaseTags();
         var testTag = tags.Where(x => x.Value == "Test").ToList();
+        var webTag = tags.Where(x => x.Value == "Web").ToList();
         await ShouldSuccessCreateNewProject("English app", "Help study english service", "Linux/Windows 10",
             "Client.exe", testTag);
-        await ShouldSuccessCreateNewProject("English app mobile", "Help study english mobile app", "Android",
-            "Client.exe", testTag);
+        
         await ShouldSuccessCreateNewProject("Line tsd app", "Work as line", "Android",
-            "Client.exe", testTag);
+            "Client.exe", webTag);
 
-        var filterRequest = new M020Request("Engl");
+		await ShouldSuccessCreateNewProject("English app mobile", "Help study english mobile app", "Android",
+			"Client.exe", testTag);
+		var filterRequest = new P012Request("Engl");
         var filterResponse = await _client.PostAsJsonAsync(ProjectsEndpoints.GetProjectFilterRoute(), filterRequest);
         var filterResult = await filterResponse.ToPaginatedResult<ProjectShortDto>();
         filterResult.Succeeded.ShouldBeTrue();
@@ -198,14 +199,14 @@ public partial class ApiTests : IDisposable
         filterResult.Data[0].Tags.ShouldNotBeEmpty();
 
 
-        var filterMobileRequest = new M020Request("English app m");
+        var filterMobileRequest = new P012Request("English app m");
         var filterMobileResponse = await _client.PostAsJsonAsync(ProjectsEndpoints.GetProjectFilterRoute(), filterMobileRequest);
         var filterMobileResult = await filterMobileResponse.ToPaginatedResult<ProjectShortDto>();
         filterMobileResult.Succeeded.ShouldBeTrue();
         filterMobileResult.Data.ShouldNotBeNull();
         filterMobileResult.Data.Count.ShouldBe(1);
 
-        var filterTsdRequest = new M020Request("line");
+        var filterTsdRequest = new P012Request("line");
         var filterTsdResponse = await _client.PostAsJsonAsync(ProjectsEndpoints.GetProjectFilterRoute(), filterTsdRequest);
         var filterTsdResult = await filterTsdResponse.ToPaginatedResult<ProjectShortDto>();
         filterTsdResult.Succeeded.ShouldBeTrue();
@@ -261,7 +262,7 @@ public partial class ApiTests : IDisposable
         var appId = await ShouldSuccessCreateNewProject("English app       ", "Help study english service", "Linux/Windows 10",
             "Client.exe", webTag);
 
-        var response = await _client.PutAsJsonAsync(ProjectsEndpoints.GetTagsRoute(), new M015Request(Guid.Parse(appId), testTagId));
+        var response = await _client.PutAsJsonAsync(ProjectsEndpoints.GetTagsRoute(), new P007Request(Guid.Parse(appId), testTagId));
         var result = await response.ToResult();
         result.Succeeded.ShouldBeTrue();
 
@@ -281,7 +282,7 @@ public partial class ApiTests : IDisposable
     {
 		await ShouldSuccessGetAccessTokenResult(_rootUserCredentials.Email, _rootUserCredentials.Password);
 		var tags = await GetDataBaseTags();
-		var response = await _client.PostAsJsonAsync(ProjectsEndpoints.GetTagsRoute(), new M024Request(tags.First().Value));
+		var response = await _client.PostAsJsonAsync(ProjectsEndpoints.GetTagsRoute(), new P016Request(tags.First().Value));
 		var result = await response.ToResult();
 		result.Succeeded.ShouldBeFalse();
 	}
@@ -290,7 +291,7 @@ public partial class ApiTests : IDisposable
 	public async Task add_tag_should_be_success()
 	{
 		await ShouldSuccessGetAccessTokenResult(_rootUserCredentials.Email, _rootUserCredentials.Password);
-		var response = await _client.PostAsJsonAsync(ProjectsEndpoints.GetTagsRoute(), new M024Request(new Random().Next(2000, 5000).ToString()));
+		var response = await _client.PostAsJsonAsync(ProjectsEndpoints.GetTagsRoute(), new P016Request(new Random().Next(2000, 5000).ToString()));
 		var result = await response.ToResult<Guid>();
 		result.Succeeded.ShouldBeTrue();
         result.Data.ShouldNotBe(default);
@@ -320,11 +321,11 @@ public partial class ApiTests : IDisposable
             "Client.exe", tags);
 
         var tagsResponse = await _client.GetAsync(ProjectsEndpoints.GetTagsRoute());
-        var tagsResult = await tagsResponse.ToResult<M021Response>();
+        var tagsResult = await tagsResponse.ToResult<P013Response>();
         tagsResult.Succeeded.ShouldBeTrue();
         tagsResult.Data.Tags.Count.ShouldBe(4);
 
-        var filterByMobileTagRequest = new M020Request(string.Empty, webTag.Select(x => x.Id).ToList());
+        var filterByMobileTagRequest = new P012Request(string.Empty, webTag.Select(x => x.Id).ToList());
         var filterByMobileTagResponse = await _client.PostAsJsonAsync(ProjectsEndpoints.GetProjectFilterRoute(), filterByMobileTagRequest);
         var filterByMobileResult = await filterByMobileTagResponse.ToPaginatedResult<ProjectShortDto>();
         filterByMobileResult.Succeeded.ShouldBeTrue();
@@ -333,7 +334,7 @@ public partial class ApiTests : IDisposable
         filterByMobileResult.Data[1].Name.ShouldBe("Line tsd app");
         filterByMobileResult.Data.Last().Name.ShouldBe("English app mobile");
 
-        var filterByHelpMobileTagRequest = new M020Request(string.Empty, desktopTag.Concat(webTag).Select(x => x.Id).ToList());
+        var filterByHelpMobileTagRequest = new P012Request(string.Empty, desktopTag.Concat(webTag).Select(x => x.Id).ToList());
         var filterByHelpMobileTagResponse = await _client.PostAsJsonAsync(ProjectsEndpoints.GetProjectFilterRoute(), filterByHelpMobileTagRequest);
         var filterByHelpMobileResult = await filterByHelpMobileTagResponse.ToPaginatedResult<ProjectShortDto>();
         filterByHelpMobileResult.Succeeded.ShouldBeTrue();
@@ -341,19 +342,19 @@ public partial class ApiTests : IDisposable
         filterByHelpMobileResult.Data.First().Name.ShouldBe("Mes tsd app");
         filterByHelpMobileResult.Data.Last().Name.ShouldBe("Line tsd app");
 
-        var filterByTopTagRequest = new M020Request(string.Empty, androidTag.Select(x => x.Id).ToList());
+        var filterByTopTagRequest = new P012Request(string.Empty, androidTag.Select(x => x.Id).ToList());
         var filterByTopTagResponse = await _client.PostAsJsonAsync(ProjectsEndpoints.GetProjectFilterRoute(), filterByTopTagRequest);
         var filterByTopTagResult = await filterByTopTagResponse.ToPaginatedResult<ProjectShortDto>();
         filterByTopTagResult.Succeeded.ShouldBeTrue();
         filterByTopTagResult.Data.Count.ShouldBe(1);
 
-        var filterByTestTagRequest = new M020Request(string.Empty, testTag.Select(x => x.Id).ToList());
+        var filterByTestTagRequest = new P012Request(string.Empty, testTag.Select(x => x.Id).ToList());
         var filterByTestTagResponse = await _client.PostAsJsonAsync(ProjectsEndpoints.GetProjectFilterRoute(), filterByTestTagRequest);
         var filterByTestTagResult = await filterByTestTagResponse.ToPaginatedResult<ProjectShortDto>();
         filterByTestTagResult.Succeeded.ShouldBeTrue();
         filterByTestTagResult.Data.Count.ShouldBe(4);
 
-        var filterByHelpMobileTagTsdNameRequest = new M020Request("tsd", desktopTag.Concat(webTag).Select(x => x.Id).ToList());
+        var filterByHelpMobileTagTsdNameRequest = new P012Request("tsd", desktopTag.Concat(webTag).Select(x => x.Id).ToList());
         var filterByHelpMobileTagTsdNameResponse = await _client.PostAsJsonAsync(ProjectsEndpoints.GetProjectFilterRoute(), filterByHelpMobileTagTsdNameRequest);
         var filterByHelpMobileTagTsdNameResult = await filterByHelpMobileTagTsdNameResponse.ToPaginatedResult<ProjectShortDto>();
         filterByHelpMobileTagTsdNameResult.Succeeded.ShouldBeTrue();
@@ -375,7 +376,7 @@ public partial class ApiTests : IDisposable
         content.Messages.FirstOrDefault().ShouldNotBeNull();
         var releaseId = content.Messages.FirstOrDefault();
 
-        var releaseNoteRequest = new M019Request(Guid.Parse(appId), Guid.Parse(releaseId), "Fixed a lot problems");
+        var releaseNoteRequest = new P011Request(Guid.Parse(appId), Guid.Parse(releaseId), "Fixed a lot problems");
         var releaseNoteResponse = await _client.PostAsJsonAsync(ProjectsEndpoints.GetReleaseNoteRoute(), releaseNoteRequest);
         var releaseNoteResult = await releaseNoteResponse.ToResult();
         releaseNoteResult.Succeeded.ShouldBeTrue();
@@ -435,7 +436,7 @@ public partial class ApiTests : IDisposable
 		{
 			new() { Value = "New tag 1" }, new() { Value = "New tag 1" }
 		};
-		var request = new M011Request("English test app", "Telegram bot web api app", "Windows 10", "Client.exe", newTags);
+		var request = new P003Request("English test app", "Telegram bot web api app", "Windows 10", "Client.exe", newTags);
 		var response = await _client.PostAsJsonAsync(ProjectsEndpoints.Base, request);
 		var content = await response.ToResult();
 		content.Succeeded.ShouldBeFalse();
@@ -453,7 +454,7 @@ public partial class ApiTests : IDisposable
     private async Task<string> ShouldSuccessCreateNewProject(string appName, string description, string systemRequirements,
         string exeFileName, List<TagDto> tags)
     {
-        var request = new M011Request(appName, description, systemRequirements, exeFileName, tags);
+        var request = new P003Request(appName, description, systemRequirements, exeFileName, tags);
         var response = await _client.PostAsJsonAsync(ProjectsEndpoints.Base, request);
         var content = await response.ToResult();
         content.Succeeded.ShouldBeTrue();
@@ -464,7 +465,7 @@ public partial class ApiTests : IDisposable
     private async Task<List<TagDto>> GetDataBaseTags()
     {
         var tagsResponse = await _client.GetAsync(ProjectsEndpoints.GetTagsRoute());
-        var tagsResult = await tagsResponse.ToResult<M021Response>();
+        var tagsResult = await tagsResponse.ToResult<P013Response>();
         tagsResult.Succeeded.ShouldBeTrue();
         tagsResult.Data.ShouldNotBeNull().Tags.ShouldNotBeNull().ShouldNotBeEmpty();
         return tagsResult.Data.Tags.ToList();

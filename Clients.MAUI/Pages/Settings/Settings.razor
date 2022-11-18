@@ -1,3 +1,18 @@
 ﻿@page "/settings"
 
-<MudText>Settings</MudText>
+<MudContainer Style="height: 80vh; width: 60vw;" Class="fade-in">
+    <MudPaper Class="d-flex pa-2 align-center justify-space-between" Width="100%" Elevation="3">
+        <MudText>@($"Пользователь: {_userEmail}")</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="LogoutAsync">Выход</MudButton>
+        </MudPaper>
+        <MudDivider />
+        <MudPaper Class="mt-2">
+            <ChangePassword />
+        </MudPaper>
+        <MudPaper Class="mt-2 pa-2">
+            <MudText Style=" white-space: pre-line;"  Typo="Typo.body1">
+                    @($"Текущая версия : v{GitVersionInformation.MajorMinorPatch} - Git sha: {GitVersionInformation.ShortSha}\nАктуальная: {_serverVersion}")
+             </MudText>
+        </MudPaper>
+    </MudContainer>
+

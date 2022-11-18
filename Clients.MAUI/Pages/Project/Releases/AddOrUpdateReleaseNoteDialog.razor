@@ -1,0 +1,23 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            Добавить описание
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField T="string" @bind-Value=@ReleaseNoteValue Lines="5" Variant="Variant.Outlined" Placeholder="Описание релиза" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Назад</MudButton>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="Submit">Добавить</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string ReleaseNoteValue { get; set; }
+    void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(ReleaseNoteValue));
+    }
+    void Cancel() => MudDialog.Cancel();
+}

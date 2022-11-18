@@ -1,6 +1,14 @@
 ﻿@page "/update/{ProjectId}"
 @using Clients.MAUI.Pages.SharedForms
 
-@if(_loaded){
-    <EditProjectForm ProjectDto=@_updateRequest OnSubmit="SubmitAsync" SubmitButtonText="Сохранить"/>
+@if (_loaded)
+{
+    <MudContainer Style="width: 80vw; height:90vh;" Class="d-flex align-start justify-center">
+        <MudTooltip Text="Назад"> 
+            <MudIconButton Class="mr-5" Icon="@Icons.Filled.ArrowBack" OnClick=@(() => _navManager.NavigateTo($"/projects/{_updateRequest.Id.ToString()}")) />
+        </MudTooltip>
+        <MudPaper Elevation="3" Class="pa-4">
+            <EditProjectForm ProjectDto=@_updateRequest OnSubmit="SubmitAsync" SubmitButtonText="Сохранить" />
+        </MudPaper>
+    </MudContainer>
 }

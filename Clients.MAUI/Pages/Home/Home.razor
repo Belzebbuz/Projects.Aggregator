@@ -1,59 +1,110 @@
 ﻿@page "/"
+@using Clients.MAUI.Application.Contracts.ViewModels
 @using Clients.MAUI.Pages.Home.Loading
 @using Clients.MAUI.Pages.Home.ProjectCard
 @using Clients.MAUI.Pages.Home.ProjectRowComponent
-<MudGrid Style="height: 95vh" Class="fade-in">
+@inherits OwningComponentBase<IFilteredContainer>
+
+<MudGrid Style="height: 95vh;" Class="fade-in">
     <MudItem xs="12" Class="slide-top align-self-start">
         <MudGrid>
-            <MudItem xs="12">
-                <MudAutocomplete T="string"
-                                 @bind-Value="_selectedSearchValue"
-                                 SearchFunc="@SearchProjectsAsync"
-                                 ResetValueOnEmptyText=true
-                                 CoerceValue=true
-                                 Variant="Variant.Outlined"
-                                 Adornment="Adornment.End"
-                                 AdornmentIcon="@Icons.Filled.Search"
-                                 AdornmentColor="Color.Default" />
+            <MudItem Class="d-flex align-center justify-center gap-4" xs="12">
+                <MudPaper Elevation="3">
+                    <MudToolBar>
+                        <MudTooltip Text="Режим поиска">
+                            <MudSwitch Color="Color.Primary" @bind-Checked="@_searchMode" />
+                        </MudTooltip>
+                        <MudTooltip Text="Фильтр по тегам">
+                            <MudIconButton Icon="@Icons.Material.Outlined.FilterList" OnClick="@(() => _isFilterOpen = !_isFilterOpen)" />
+                        </MudTooltip>
+                    </MudToolBar>
+                </MudPaper>
+
+                <MudTextField T="string"
+                              Placeholder="Поиск по названию"
+                              TextChanged="SearchProjectsAsync"
+                              Variant="Variant.Outlined"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@Icons.Filled.Search"
+                              AdornmentColor="Color.Default" />
             </MudItem>
-            @if (!_searchMode)
+            @if (_isFilterOpen)
             {
-                <MudItem xs="12" Class="mt-3 slide-top" Style="--delay: 0.1s">
-                    <ProjectRow Loaded=@_loaded
-                            Class="px-4 d-flex flex-nowrap gap-4 overflow-auto align-center"
-                            Height="270px"
-                            Projects="_webProjects" />
-                </MudItem>
-                <MudItem xs="12" Class="slide-top" Style="--delay: 0.2s">
-                    <ProjectRow Loaded=@_loaded
-                            Class="px-4 d-flex flex-nowrap gap-4 overflow-auto align-center"
-                            Height="270px"
-                            Projects="_desktopProjects" />
-                </MudItem>
+                @if (_searchMode)
+                {
+                    <MudItem xs="12" Class="d-flex align-center justify-start gap-1">
+                        <MudText Typo="Typo.body1">Теги: </MudText>
+                        @foreach (var tag in _searchModeFilteredProjects.FilterTags)
+                        {
+                            <MudChip Value="tag" Color="Color.Default" OnClose="@RemoveTagFromSearchModeOnCloseAsync">@tag.Value</MudChip>
+                        }
+                        <MudIconButton Icon="@Icons.Material.Outlined.Add"
+                               Size="Size.Small"
+                               OnClick="@(async () => await OpenSelectTagDiaolgAsync(_searchModeFilteredProjects))" />
+                    </MudItem>
+                }
+                else
+                {
+                    <MudItem xs="12">
+                        <MudGrid>
+                            @foreach (var projectRow in _projectsRows)
+                            {
+                                <MudItem xs="12" Class="d-flex align-center justify-start gap-1">
+                                    <MudText Align="Align.Start">@($"Строка #{_projectsRows.IndexOf(projectRow) + 1}: ")</MudText>
+                                    @foreach (var tag in projectRow.FilterTags)
+                                    {
+                                        <MudChip Value="tag" Color="Color.Default" OnClose="@RemoveTagOnCloseAsync">@tag.Value</MudChip>
+                                    }
+                                    <MudIconButton Icon="@Icons.Material.Outlined.Add"
+                                       Size="Size.Small"
+                                       OnClick="@(async () => await OpenSelectTagDiaolgAsync(projectRow))" />
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </MudItem>
+                }
             }
-            else
+            @if (_searchMode)
             {
-                if (_searchAllProjects.Count > 0)
+                if (_searchModeFilteredProjects.Projects.Count > 0)
                 {
                     int animationDelay = 1;
-                    foreach (var project in _searchAllProjects)
+                    foreach (var project in _searchModeFilteredProjects.Projects)
                     {
                         <MudItem xs="12" Class="slide-top" Style=@($"--delay: 0.0{animationDelay}s;")>
                             <SearchProjectRow Project=@project />
                         </MudItem>
                         animationDelay++;
                     }
-
                     animationDelay = 0;
                 }
             }
+            else
+            {
+                @if (!_loaded)
+                {
+                    <MudItem xs="12" Class="d-flex align-center justify-center">
+                        <MudProgressCircular Indeterminate=true Size="Size.Large" />
+                    </MudItem>
+                }
+                else
+                {
+                    foreach (var filteredProjects in _projectsRows)
+                    {
+                        <MudItem xs="12" Class="mt-1 slide-top" Style="--delay: 0.1s">
+                            <ProjectRow Class="px-4 d-flex flex-nowrap gap-4 overflow-auto align-center"
+                            Height="270px"
+                            Projects="filteredProjects.Projects" />
+                        </MudItem>
+                    }
+                }
+            }
         </MudGrid>
-
     </MudItem>
     @if (_searchMode)
     {
         <MudItem Class="d-flex align-self-end justify-center fade-in" xs="12">
-            <MudPagination Count="@_pageCount" SelectedChanged="SearchProjectsBySearchStringValue" />
+            <MudPagination Count="@_searchModeFilteredProjects.PageCount" Selected="@_selectedPage" SelectedChanged="SearchProjectsBySearchStringValue" />
         </MudItem>
     }
 </MudGrid>

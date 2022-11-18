@@ -1,0 +1,64 @@
+﻿@using SharedLibrary.ApiMessages.Projects.Dto
+@using SharedLibrary.Authentication
+<MudExpansionPanel HideIcon=true @bind-IsExpanded="_isOpen">
+    <TitleContent>
+        <MudContainer Class="d-flex align-center gap-4 ml-n4">
+            <MudIcon Icon=@(_isOpen ? Icons.Filled.KeyboardArrowDown : Icons.Filled.KeyboardArrowRight) />
+            <MudText Typo="Typo.body1">@($"Релиз {Release.LastModifiedOn} от {Release.CreatedByEmail} v{Release.Version}")</MudText>
+            @if (string.IsNullOrEmpty(Release.ReleaseNote))
+            {
+                <MudTooltip Text="Отсутствует описание" Arrow="true" Placement="Placement.Top">
+                    <MudIcon Icon="@Icons.Material.Outlined.Error" Color="Color.Error" />
+                </MudTooltip>
+            }
+            <div class="ml-auto d-flex gap-4 align-center justify-end">
+                @if (!_downloading)
+                {
+                    <MudIconButton OnClick=@DownloadReleaseAsync Icon="@Icons.Material.Filled.Download" Variant="Variant.Outlined" Size="Size.Medium" />
+                }
+                else
+                {
+                    <MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" />
+                }
+                <AuthorizeView Roles="@SHRoles.Dev">
+                    <Authorized>
+                        <MudIconButton OnClick="DeleteReleaseAsync"
+                                       Icon="@Icons.Material.Outlined.Delete"
+                                       Variant=" Variant.Outlined"
+                                       Size="Size.Medium" />
+                    </Authorized>
+                </AuthorizeView>
+            </div>
+        </MudContainer>
+    </TitleContent>
+    <ChildContent>
+        @if (string.IsNullOrEmpty(Release.ReleaseNote))
+        {
+            <AuthorizeView Roles="@SHRoles.Dev">
+                <Authorized>
+                    <MudContainer Class="d-flex justify-center">
+                        <MudTooltip Text="Добавить описание" Arrow="true" Placement="Placement.Top">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick=@AddOrUpdateReleaseNoteAsync />
+                        </MudTooltip>
+                    </MudContainer>
+                </Authorized>
+            </AuthorizeView>
+        }
+        else
+        {
+            <MudGrid Class="d-flex justify-space-between">
+
+                <MudItem xs="1">
+                    <AuthorizeView Roles="@SHRoles.Dev">
+                        <Authorized>
+                            <MudIconButton Icon=@Icons.Material.Filled.EditNote OnClick=@AddOrUpdateReleaseNoteAsync />
+                        </Authorized>
+                    </AuthorizeView>
+                </MudItem>
+                <MudItem Class="d-flex align-center" xs="11">
+                    <MudText Style="white-space: pre-line;" Typo="Typo.body2">@Release.ReleaseNote</MudText>
+                </MudItem>
+            </MudGrid>
+        }
+    </ChildContent>
+</MudExpansionPanel>

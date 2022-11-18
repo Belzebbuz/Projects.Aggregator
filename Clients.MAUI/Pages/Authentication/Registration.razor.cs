@@ -1,12 +1,12 @@
 using Clients.MAUI.Utilities;
-using SharedLibrary.ApiMessages.Identity.M005;
+using SharedLibrary.ApiMessages.Identity.ID005;
 namespace Clients.MAUI.Pages.Authentication;
 
 public partial class Registration
 {
     FluentValidationValidator? _fluentValidationValidator;
     private bool _validated => _fluentValidationValidator.Validate(options => options.IncludeAllRuleSets());
-    private M005Request _registerRequest = new();
+    private ID005Request _registerRequest = new();
     public async Task SubmitAsync()
     {
         var result = await _identityService.SelfRegisterAsync(_registerRequest);

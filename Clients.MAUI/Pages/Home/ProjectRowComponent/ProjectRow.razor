@@ -1,32 +1,21 @@
-﻿@using Clients.MAUI.Pages.Home.Loading
-@using Clients.MAUI.Pages.Home.ProjectCard
+﻿@using Clients.MAUI.Pages.Home.ProjectCard
 @using SharedLibrary.ApiMessages.Projects.Dto
 <MudPaper Class=@Class Elevation="4" Height=@Height>
-    @if (!Loaded)
+    @if (Projects.Count > 0)
     {
-        <SkeletonCard Height="240px" Width="430px" />
-        <SkeletonCard Height="240px" Width="430px" />
-        <SkeletonCard Height="240px" Width="430px" />
+        @foreach (var project in Projects)
+        {
+            <ProjectCard Class="flex-none fade-in" Style=" height: 240px; width: 430px" Project="@project" />
+        }
     }
     else
     {
-        @if (Projects.Count > 0)
-        {
-            @foreach (var project in Projects)
-            {
-                <ProjectCard Class="flex-none fade-in" Style=" height: 240px; width: 430px" Project="@project" />
-            }
-        }
-        else
-        {
-            <MudText Typo="Typo.body1">Not found</MudText>
-        }
+        <MudText Typo="Typo.body1">Not found</MudText>
     }
 </MudPaper>
 
 @code {
-    [Parameter] public List<ProjectShortDto> Projects { get; set; }
+    [Parameter] public IReadOnlyCollection<ProjectShortDto> Projects { get; set; }
     [Parameter] public string Class { get; set; }
     [Parameter] public string Height { get; set; }
-    [Parameter] public bool Loaded { get; set; }
 }

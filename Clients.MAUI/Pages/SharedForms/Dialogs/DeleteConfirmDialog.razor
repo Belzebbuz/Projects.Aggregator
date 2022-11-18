@@ -1,0 +1,26 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Delete" Class="mr-3 mb-n1" />
+            Вы уверены что хотите удалить?
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText>@ContentText</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Назад</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="Submit">Подтвердить</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public string ContentText { get; set; }
+
+    void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+    void Cancel() => MudDialog.Cancel();
+}

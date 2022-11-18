@@ -1,30 +1,6 @@
 using Clients.MAUI.Utilities;
-using Microsoft.AspNetCore.Components
-/* Unmerged change from project 'Clients.MAUI (net6.0-maccatalyst)'
-Before:
-using System.Security.Claims;
-using Clients.MAUI.Utilities;
-After:
 using Microsoft.AspNetCore.Components.Authorization;
-*/
-
-/* Unmerged change from project 'Clients.MAUI (net6.0-ios)'
-Before:
-using System.Security.Claims;
-using Clients.MAUI.Utilities;
-After:
-using Microsoft.AspNetCore.Components.Authorization;
-*/
-
-/* Unmerged change from project 'Clients.MAUI (net6.0-windows10.0.19041.0)'
-Before:
-using System.Security.Claims;
-using Clients.MAUI.Utilities;
-After:
-using Microsoft.AspNetCore.Components.Authorization;
-*/
-.Authorization;
-using SharedLibrary.ApiMessages.Identity.M001;
+using SharedLibrary.ApiMessages.Identity.ID001;
 using System.Security.Claims;
 
 namespace Clients.MAUI.Pages.Authentication;
@@ -33,7 +9,7 @@ public partial class Login
 {
     private FluentValidationValidator? _fluentValidationValidator;
     private bool Validated => _fluentValidationValidator!.Validate(options => { options.IncludeAllRuleSets(); });
-    private M001Request _tokenRequest = new();
+    private ID001Request _tokenRequest = new();
 
     protected override async Task OnInitializedAsync()
     {

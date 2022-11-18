@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SharedLibrary.ApiMessages.Identity.M001;
-using SharedLibrary.ApiMessages.Identity.M002;
+using SharedLibrary.ApiMessages.Identity.ID001;
+using SharedLibrary.ApiMessages.Identity.ID002;
 using SharedLibrary.Routes;
 using SharedLibrary.Wrapper;
 
@@ -20,13 +20,13 @@ public class TokenController : ControllerBase
 	[HttpPost]
 	[AllowAnonymous]
 	[OpenApiOperation("Request an access token using credentials.", "")]
-	public async Task<IResult<M001Response>> GetTokenAsync(M001Request request, CancellationToken cancellationToken)
+	public async Task<IResult<ID001Response>> GetTokenAsync(ID001Request request, CancellationToken cancellationToken)
 		=> await _tokenService.GetTokenAsync(request, GetIpAddress(), cancellationToken);
 
 	[HttpPost("refresh")]
 	[AllowAnonymous]
 	[OpenApiOperation("Request an access token using a refresh token.", "")]
-	public async Task<IResult<M001Response>> RefreshAsync(M002Request request)
+	public async Task<IResult<ID001Response>> RefreshAsync(ID002Request request)
 		=> await _tokenService.RefreshTokenAsync(request, GetIpAddress());
 
 	private string GetIpAddress() =>

@@ -66,7 +66,7 @@ public static class SnackBarExtensions
 			{
 				snackbar.Add("Error while handling result");
 			}
-			return null;
+			return default;
 		}
 	}
 	public static PaginatedResult<T> HandleResult<T>(this ISnackbar snackbar, PaginatedResult<T> result)

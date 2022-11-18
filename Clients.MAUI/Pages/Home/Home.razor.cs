@@ -1,70 +1,98 @@
-using Clients.MAUI.Utilities;
+using Clients.MAUI.Application.Contracts.ViewModels;
+using Clients.MAUI.Pages.SharedForms.Dialogs;
 using SharedLibrary.ApiMessages.Projects.Dto;
 
 namespace Clients.MAUI.Pages.Home;
 
 public partial class Home
 {
-	private string _selectedSearchValue;
+	private bool _isFilterOpen = false;
 	private bool _loaded = false;
 	private bool _searchMode = false;
-	private List<ProjectShortDto> _webProjects = new();
-	private List<ProjectShortDto> _desktopProjects = new();
-	private List<ProjectShortDto> _searchAllProjects = new();
+	private List<IFilteredContainer> _projectsRows = new();
+	private IFilteredContainer _searchModeFilteredProjects;
+	private string[] _startTagFilters = new[] { "", "Desktop" };
 	protected override async Task OnInitializedAsync()
 	{
 		_loaded = false;
-		await LoadAsync();
-		_loaded = true;
+		_loaded = await LoadAsync();
+		_searchModeFilteredProjects = _filteredProjectsFactory.Create();
+		await _searchModeFilteredProjects.FilterBySelfTagsAsync();
 	}
-
-	private async Task LoadAsync()
+	private async Task<bool> LoadAsync()
 	{
-		var tagsResult = await _projectService.GetAllTagsAsync();
-		var tags = _snackBar.HandleResult(tagsResult);
-		if (tags == null)
-			return;
+		try
+		{
+			foreach (var startFilterTag in _startTagFilters)
+			{
+				var projectRow = _filteredProjectsFactory.Create();
+				if(string.IsNullOrEmpty(startFilterTag))
+				{
+					await projectRow.FilterBySelfTagsAsync();
+				}
+				else
+				{
+					await projectRow.FilterAsync(startFilterTag);
+				}
+				_projectsRows.Add(projectRow);
+			}
 
-		var webIds = tags.Where(x => x.Value == "Web").Select(x => x.Id).ToList();
-		var desktopIds = tagsResult.Data.Where(x => x.Value == "Desktop").Select(x => x.Id).ToList();
-		var webProjectsResult = await _projectService.GetProjectsByFilterAsync(new(string.Empty, webIds), 1, 5);
-		var webProjects = _snackBar.HandleResult(webProjectsResult);
-		if (webProjects == null)
-			return;
-
-		_webProjects = webProjects.Data;
-		var projectsResult = await _projectService.GetProjectsByFilterAsync(new(string.Empty, desktopIds), 1, 5);
-		var projects = _snackBar.HandleResult(projectsResult);
-		if(projects == null)
-			return;
-		_desktopProjects = projects.Data;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			_snackBar.Add(ex.Message, Severity.Error);
+			return false;
+		}
 	}
 
-	private int _pageCount = 1;
 	private string _searchString;
-	private async Task<IEnumerable<string>> SearchProjectsAsync(string value)
+	private int _selectedPage = 1;	
+	private async Task SearchProjectsAsync(string value)
 	{
 		_searchMode = true;
-		if (!string.IsNullOrEmpty(value))
-		{
-			_searchString = value;
-			await SearchProjectsBySearchStringValue();
-		}
-		else
-		{
-			_searchString = string.Empty;
-			_searchMode = false;
-		}
-		return new List<string>();
+		_searchString = value;
+		await SearchProjectsBySearchStringValue();
 	}
 
 	private async Task SearchProjectsBySearchStringValue(int selectedPage = 1)
 	{
-		var projectsResult = await _projectService.GetProjectsByFilterAsync(new(_searchString), selectedPage, 5);
-		var projectShortPaginate = _snackBar.HandleResult(projectsResult);
-		if(projectShortPaginate == null)
-			return;
-		_pageCount = projectShortPaginate.TotalPages;
-		_searchAllProjects = projectShortPaginate.Data;
+		
+		try
+		{
+			_selectedPage = selectedPage;
+			await _searchModeFilteredProjects.FilterBySelfTagsAsync(_searchString, selectedPage);
+		}
+		catch (Exception ex)
+		{
+			_snackBar.Add(ex.Message, Severity.Error);
+		}
+	}
+
+	private async Task RemoveTagOnCloseAsync(MudChip chip)
+	{
+		var tag = (TagDto)chip.Value;
+		foreach (var projectRow in _projectsRows)
+		{
+			await projectRow.RemoveTagFromFilter(tag);
+		}
+	}
+	private async Task RemoveTagFromSearchModeOnCloseAsync(MudChip chip)
+	{
+		var tag = (TagDto)chip.Value;
+		await _searchModeFilteredProjects.RemoveTagFromFilter(tag);
+	}
+	public async Task OpenSelectTagDiaolgAsync(IFilteredContainer filteredProjects)
+	{
+		var parameters = new DialogParameters();
+		parameters.Add(nameof(SelectTagsDialog.SelectedTags), filteredProjects.FilterTags.Select(x => x.Id).ToList());
+		var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, DisableBackdropClick = true };
+		var dialog = _dialogService.Show<SelectTagsDialog>("Фильтр по тегам", parameters, options);
+		var dialogResult = await dialog.Result;
+		if (!dialogResult.Cancelled)
+		{
+			var selectedTags = (IEnumerable<TagDto>)dialogResult.Data;
+			await filteredProjects.FilterAsync(selectedTags.ToList());
+		}
 	}
 }

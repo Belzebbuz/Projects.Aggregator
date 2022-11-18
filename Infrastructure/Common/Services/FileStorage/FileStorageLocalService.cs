@@ -1,8 +1,11 @@
 ﻿using Application.Contracts.Services;
+using Domain.Aggregators.Project;
 using SharedLibrary.Helpers;
 using SharedLibrary.Wrapper;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Compression;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Infrastructure.Common.Services.FileStorage;
 
@@ -10,7 +13,7 @@ internal class FileStorageLocalService : IFileStorageService
 {
     private const string RootProjectsFolder = "Files\\Projects";
     private readonly string _tempFolder = $"Files\\Temp\\{Guid.NewGuid()}";
-
+    private const string BugReportsImagesFolder = "Files\\BugReports";
     public void DeleteFiles(IEnumerable<string> filePaths)
     {
         foreach (var url in filePaths)
@@ -77,4 +80,5 @@ internal class FileStorageLocalService : IFileStorageService
         }
 
     }
+
 }

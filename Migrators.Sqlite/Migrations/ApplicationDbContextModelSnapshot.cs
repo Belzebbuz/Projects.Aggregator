@@ -17,6 +17,51 @@ namespace Migrators.Sqlite.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.10");
 
+            modelBuilder.Entity("Domain.Aggregators.Bug.BugReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedByEmail")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("LastModifiedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LastModifiedByEmail")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BugReports");
+                });
+
             modelBuilder.Entity("Domain.Aggregators.Project.Project", b =>
                 {
                     b.Property<Guid>("Id")

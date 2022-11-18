@@ -2,13 +2,15 @@
 @using Clients.MAUI.Pages.SharedForms
 @using Clients.MAUI.Utilities
 @using SharedLibrary.ApiMessages.Projects.Dto
-@using SharedLibrary.ApiMessages.Projects.M011
-
-
-<EditProjectForm ProjectDto="@_createProjectModel" OnSubmit="SubmitAsync" SubmitButtonText="Создать"/>
+@using SharedLibrary.ApiMessages.Projects.P003
+<MudContainer Style="width: 80vw; height:90vh;" Class="d-flex align-start justify-center">
+	<MudPaper Elevation="3" Class="pa-4">
+		<EditProjectForm ProjectDto="@_createProjectModel" OnSubmit="SubmitAsync" SubmitButtonText="Создать"/>
+	</MudPaper>
+</MudContainer>
 
 @code{
-    private readonly M011Request _createProjectModel = new();
+    private readonly P003Request _createProjectModel = new();
 
 	public async Task SubmitAsync()
 	{

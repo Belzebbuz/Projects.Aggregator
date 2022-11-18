@@ -4,13 +4,3 @@ public interface ITransientService
 {
 
 }
-
-public interface ISingletonService
-{
-
-}
-
-public interface IScopedService
-{
-
-}

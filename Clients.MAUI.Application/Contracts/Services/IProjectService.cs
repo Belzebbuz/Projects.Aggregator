@@ -1,18 +1,18 @@
 ﻿using Clients.MAUI.Application.Contracts.Services.Common;
 using SharedLibrary.ApiMessages.Projects.Dto;
-using SharedLibrary.ApiMessages.Projects.M011;
-using SharedLibrary.ApiMessages.Projects.M012;
-using SharedLibrary.ApiMessages.Projects.M020;
+using SharedLibrary.ApiMessages.Projects.P003;
+using SharedLibrary.ApiMessages.Projects.P004;
+using SharedLibrary.ApiMessages.Projects.P012;
 using SharedLibrary.Wrapper;
 
 namespace Clients.MAUI.Application.Contracts.Services;
 
 public interface IProjectService : ITransientService
 {
-    public Task<IResult> CreateProjectAsync(M011Request request);
-    public Task<IResult> UpdateProjectAsync(M012Request request);
+    public Task<IResult> CreateProjectAsync(P003Request request);
+    public Task<IResult> UpdateProjectAsync(P004Request request);
     public Task<PaginatedResult<ProjectShortDto>> GetAllProjectsAsync(int page, int itemsPerPage);
-    public Task<PaginatedResult<ProjectShortDto>> GetProjectsByFilterAsync(M020Request request, int page, int itemsPerPage);
+    public Task<PaginatedResult<ProjectShortDto>> GetProjectsByFilterAsync(P012Request request, int page, int itemsPerPage);
     public Task<IResult<ProjectDto>> GetProjectByIdAsync(Guid projectId);
     public Task<IResult> DeleteProjectAsync(Guid projectId);
     public Task<IResult> UploadReleaseAsync(Guid projectId, string fileName, string filePath, string contentType);
@@ -24,6 +24,4 @@ public interface IProjectService : ITransientService
     public Task<IResult<List<string>>> GetProjectNames(string text);
     public Task<IResult> AddOrUpdateReleaseNote(Guid projectId, Guid releaseId, string text);
     public Task<IResult<List<TagDto>>> GetTagsByNameAsync(string value);
-    public Task<IResult<List<Guid>>> CreateTagsAsync(List<TagDto> tags);
-    public Task<IResult<Guid>> CreateSingleTagAsync(string value);
 }

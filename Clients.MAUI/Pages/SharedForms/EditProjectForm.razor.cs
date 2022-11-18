@@ -40,9 +40,19 @@ public partial class EditProjectForm
 		if (ProjectDto.Tags == null)
 			ProjectDto.Tags = new();
 
+
 		if (tagDto != null)
 		{
-
+			if(tagDto.Value.Length >=15)
+			{
+				_snackBar.Add("Макисмум 15 символов", Severity.Warning);
+				return;
+			}
+			if (ProjectDto.Tags.Any(x => x.Value == tagDto.Value))
+			{
+				_snackBar.Add("Уже добавлен!", Severity.Warning);
+				return;
+			}
 			ProjectDto.Tags.Add(tagDto);
 		}
 	}

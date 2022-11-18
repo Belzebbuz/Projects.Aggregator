@@ -1,14 +1,14 @@
 using Mapster;
 using Microsoft.AspNetCore.Components;
-using SharedLibrary.ApiMessages.Projects.M012;
-using SharedLibrary.ApiMessages.Projects.M020;
+using SharedLibrary.ApiMessages.Projects.P004;
+using SharedLibrary.ApiMessages.Projects.P012;
 
 namespace Clients.MAUI.Pages.Project.UpdatePage;
 
 public partial class UpdateProject
 {
 	[Parameter] public string ProjectId { get; set; }
-	private M012Request _updateRequest = new();
+	private P004Request _updateRequest = new();
 	private bool _loaded = false;
 	protected override async Task OnInitializedAsync()
 	{
@@ -16,7 +16,7 @@ public partial class UpdateProject
 		var project = await _projectService.GetProjectByIdAsync(Guid.Parse(ProjectId));
 		if(project.Succeeded)
 		{
-			_updateRequest = project.Data.Adapt<M012Request>();
+			_updateRequest = project.Data.Adapt<P004Request>();
 		}
 		_loaded = true;
 	}

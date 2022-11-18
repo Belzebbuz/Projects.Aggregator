@@ -1,16 +1,12 @@
-﻿using App.Shared.ApiMessages.Projects.M015;
+﻿using App.Shared.ApiMessages.Projects.P007;
 using Clients.MAUI.Application.Contracts.Services;
 using Clients.MAUI.Infrastructure.Extensions;
-using SharedLibrary;
 using SharedLibrary.ApiMessages.Projects.Dto;
-using SharedLibrary.ApiMessages.Projects.M011;
-using SharedLibrary.ApiMessages.Projects.M012;
-using SharedLibrary.ApiMessages.Projects.M019;
-using SharedLibrary.ApiMessages.Projects.M020;
-using SharedLibrary.ApiMessages.Projects.M021;
-using SharedLibrary.ApiMessages.Projects.M024;
-using SharedLibrary.ApiMessages.Projects.M025;
-using SharedLibrary.Helpers;
+using SharedLibrary.ApiMessages.Projects.P003;
+using SharedLibrary.ApiMessages.Projects.P004;
+using SharedLibrary.ApiMessages.Projects.P011;
+using SharedLibrary.ApiMessages.Projects.P012;
+using SharedLibrary.ApiMessages.Projects.P013;
 using SharedLibrary.Routes;
 using SharedLibrary.Wrapper;
 using System.Net.Http.Headers;
@@ -38,17 +34,11 @@ public class ProjectsService : IProjectService
 
 	public async Task<IResult> AddTagToProjectAsync(Guid projectId, Guid tagId)
 	{
-		var requestResult = await ThrowHelper.TrySendRequest(async () =>
-		{
-			return await _client.PostAsJsonAsync(ProjectsEndpoints.GetTagsRoute(), new M015Request(projectId, tagId));
-		});
-		if (!requestResult.Succeeded)
-			return requestResult;
-
-		return await requestResult.Data.ToResult();
+		var requestResult = await _client.PostAsJsonAsync(ProjectsEndpoints.GetTagsRoute(), new P007Request(projectId, tagId));
+		return await requestResult.ToResult();
 	}
 
-	public async Task<IResult> CreateProjectAsync(M011Request request)
+	public async Task<IResult> CreateProjectAsync(P003Request request)
 	{
 		var response = await _client.PostAsJsonAsync(ProjectsEndpoints.Base, request);
 		return await response.ToResult();
@@ -74,29 +64,20 @@ public class ProjectsService : IProjectService
 
 	public async Task<IResult> DownloadReleaseAsync(Guid projectId, Guid releaseId, string fileName, string folderPath)
 	{
-		try
+		var downloadRequest = await _client.GetStreamAsync(ProjectsEndpoints.GetSingleReleaseRoute(projectId, releaseId));
+		if (!Directory.Exists(folderPath))
+			Directory.CreateDirectory(folderPath);
+		var downloadFileName = Path.Combine(folderPath, $"{fileName}.zip");
+		await using (var fs = File.OpenWrite(downloadFileName))
 		{
-			var downloadRequest = await _client.GetStreamAsync(ProjectsEndpoints.GetSingleReleaseRoute(projectId, releaseId));
-			if (!Directory.Exists(folderPath))
-				Directory.CreateDirectory(folderPath);
-			var downloadFileName = Path.Combine(folderPath, $"{fileName}.zip");
-			await using (var fs = File.OpenWrite(downloadFileName))
-			{
-				await downloadRequest.CopyToAsync(fs);
-			}
-			return Result.Success();
+			await downloadRequest.CopyToAsync(fs);
 		}
-		catch (Exception ex)
-		{
-			return Result.Fail(ex.Message);
-		}
-
+		return Result.Success();
 	}
 
 	public async Task<PaginatedResult<ProjectShortDto>> GetAllProjectsAsync(int page, int itemsPerPage)
 	{
-		_client.DefaultRequestHeaders.Add(Headers.Page, page.ToString());
-		_client.DefaultRequestHeaders.Add(Headers.ItemsPerPage, itemsPerPage.ToString());
+		_client.AddOrUpdatePaginationHeaders(page, itemsPerPage);
 
 		var response = await _client.GetAsync(ProjectsEndpoints.Base);
 		return await response.ToPaginatedResult<ProjectShortDto>();
@@ -104,17 +85,11 @@ public class ProjectsService : IProjectService
 
 	public async Task<IResult<ICollection<TagDto>>> GetAllTagsAsync()
 	{
-		var responseResult = await ThrowHelper.TrySendRequest(async () =>
-		{
-			return await _client.GetAsync(ProjectsEndpoints.GetTagsRoute());
-		});
+		var responseResult = await _client.GetAsync(ProjectsEndpoints.GetTagsRoute());
 
-		if (!responseResult.Succeeded)
-			return Result<ICollection<TagDto>>.Fail(responseResult.Messages);
-
-		var result = await responseResult.Data.ToResult<M021Response>();
+		var result = await responseResult.ToResult<P013Response>();
 		if (!result.Succeeded)
-			return Result<ICollection<TagDto>>.Fail(result.Messages);
+			Result<ICollection<TagDto>>.Fail(result.Messages);
 
 		return Result<ICollection<TagDto>>.Success(result.Data.Tags);
 	}
@@ -127,25 +102,18 @@ public class ProjectsService : IProjectService
 
 	public async Task<IResult<List<string>>> GetProjectNames(string text)
 	{
-		try
-		{
-			var response = await _client.GetAsync(ProjectsEndpoints.GetProjectsNamesRoute(text));
-			return await response.ToResult<List<string>>();
-		}
-		catch (Exception ex)
-		{
-			return Result<List<string>>.Fail(ex.Message);
-		}
+		var response = await _client.GetAsync(ProjectsEndpoints.GetProjectsNamesRoute(text));
+		return await response.ToResult<List<string>>();
 	}
 
-	public async Task<PaginatedResult<ProjectShortDto>> GetProjectsByFilterAsync(M020Request request, int page, int itemsPerPage)
+	public async Task<PaginatedResult<ProjectShortDto>> GetProjectsByFilterAsync(P012Request request, int page, int itemsPerPage)
 	{
 		_client.AddOrUpdatePaginationHeaders(page, itemsPerPage);
 		var response = await _client.PostAsJsonAsync(ProjectsEndpoints.GetProjectFilterRoute(), request);
 		return await response.ToPaginatedResult<ProjectShortDto>();
 	}
 
-	public async Task<IResult> UpdateProjectAsync(M012Request request)
+	public async Task<IResult> UpdateProjectAsync(P004Request request)
 	{
 		var response = await _client.PutAsJsonAsync(ProjectsEndpoints.Base, request);
 		return await response.ToResult();
@@ -153,25 +121,18 @@ public class ProjectsService : IProjectService
 
 	public async Task<IResult> AddOrUpdateReleaseNote(Guid projectId, Guid releaseId, string? text)
 	{
-		var response = await _client.PostAsJsonAsync(ProjectsEndpoints.GetReleaseNoteRoute(), new M019Request(projectId, releaseId, text));
+		var response = await _client.PostAsJsonAsync(ProjectsEndpoints.GetReleaseNoteRoute(), new P011Request(projectId, releaseId, text));
 		return await response.ToResult();
 	}
 
 	public async Task<IResult<List<TagDto>>> GetTagsByNameAsync(string value)
 	{
 		var response = await _client.GetAsync(ProjectsEndpoints.GetTagsFilterRoute(value ?? String.Empty));
+		if (string.IsNullOrEmpty(value))
+		{
+			var result = await response.ToResult<P013Response>();
+			return Result<List<TagDto>>.Success(result.Data.Tags.ToList());
+		}
 		return await response.ToResult<List<TagDto>>();
-	}
-
-	public async Task<IResult<List<Guid>>> CreateTagsAsync(List<TagDto> tags)
-	{
-		var response = await _client.PostAsJsonAsync(ProjectsEndpoints.GetMultipleTagsRoute(), new M025Request(tags.Select(x => x.Value).ToList()));
-		return await response.ToResult<List<Guid>>();
-	}
-
-	public async Task<IResult<Guid>> CreateSingleTagAsync(string value)
-	{
-		var response = await _client.PostAsJsonAsync(ProjectsEndpoints.GetTagsRoute(), new M024Request(value));
-		return await response.ToResult<Guid>();
 	}
 }

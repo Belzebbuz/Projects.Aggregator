@@ -7,6 +7,7 @@ public class PaginationService : IPaginationService
 {
     private Pagination _pagination;
 
+    public Pagination Pagination => _pagination;
 
     public Pagination Calculate(int totalItemsCount)
     {

@@ -12,8 +12,8 @@ namespace Host.Controllers.Common;
 public class CheckController : BaseApiController
 {
     [HttpGet]
-    public async Task<IResult> Check()
-        => await Result.SuccessAsync("Ok");
+    public async Task<IResult<string>> Check()
+        => await Result<string>.SuccessAsync(data: $"v{GitVersionInformation.MajorMinorPatch} - Git sha: {GitVersionInformation.ShortSha}");
 
     [HttpGet("jwt-auth")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

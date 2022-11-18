@@ -1,0 +1,28 @@
+﻿<MudDialog>
+    <DialogContent>
+        @if (!_loaded)
+        {
+            <MudContainer Style="width: 100%" Class="d-flex align-center justify-center">
+                <MudProgressCircular Indeterminate=true />
+            </MudContainer>
+        }
+        else
+        {
+            <MudGrid>
+                @foreach (var role in _roles)
+                {
+                    <MudItem xs="12">
+                        <MudPaper Elevation="3" Class="pa-2 d-flex align-center justify-start">
+                            <MudCheckBox Checked="@role.Enabled" CheckedChanged="@((bool enabled) => role.Enabled = enabled)"/>
+                            <MudText Typo="Typo.h6">@role.RoleName</MudText>
+                        </MudPaper>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="AssignAsync" Variant="Variant.Filled">Сохранить</MudButton>
+    </DialogActions>
+</MudDialog>
+

@@ -7,4 +7,5 @@ public interface IPaginationService : IScopedService
 {
     public void SetRequestPaginate(int page, int itemsPerPage);
     public Pagination Calculate(int totalItemsCount);
+    public Pagination Pagination { get; }
 }

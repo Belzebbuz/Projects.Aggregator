@@ -1,3 +1,3 @@
-﻿global using App.Shared.ApiMessages.Projects.M015;
+﻿global using App.Shared.ApiMessages.Projects.P007;
 
 global using MediatR;

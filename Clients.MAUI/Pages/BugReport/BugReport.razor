@@ -1,0 +1,17 @@
+﻿@page "/bugReport"
+
+<EditForm class="fade-in d-flex align-start justify-center pt-5" style="height: 100vh" Model="@_bugRequest" OnValidSubmit="SubmitAsync">
+    <FluentValidationValidator @ref="@_fluentValidationValidator" />
+    <MudPaper Elevation="3" Class="d-flex align-center justify-center pa-5" Width="70vw">
+        <MudGrid Class="d-flex align-center justify-center">
+            <MudItem xs="12">
+                <MudTextField Lines="7" T="string" Variant="Variant.Outlined" Placeholder=@("На главной странице при нажатии на кнопку \"Подробнее\" на любой из плашек вылетает приложение")
+                              For="@(() => _bugRequest.Text)" @bind-Value="_bugRequest.Text" />
+            </MudItem>
+            <MudItem xs="12" Class="d-flex justify-center align-self-start">
+                <MudButton ButtonType="ButtonType.Submit" Disabled=@(!_validated) Variant="Variant.Filled" Color="Color.Primary">Отправить</MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+</EditForm>

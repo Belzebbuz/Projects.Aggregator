@@ -1,20 +1,25 @@
 ﻿using Application.Contracts.DI;
 using SharedLibrary.ApiMessages.Identity.Base;
-using SharedLibrary.ApiMessages.Identity.M004;
-using SharedLibrary.ApiMessages.Identity.M005;
-using SharedLibrary.ApiMessages.Identity.M006;
-using SharedLibrary.ApiMessages.Identity.M007;
-using SharedLibrary.ApiMessages.Identity.M008;
+using SharedLibrary.ApiMessages.Identity.ID004;
+using SharedLibrary.ApiMessages.Identity.ID005;
+using SharedLibrary.ApiMessages.Identity.ID006;
+using SharedLibrary.ApiMessages.Identity.ID007;
+using SharedLibrary.ApiMessages.Identity.ID009;
+using SharedLibrary.ApiMessages.Identity.ID008;
 using SharedLibrary.Wrapper;
+using SharedLibrary.ApiMessages.Identity.ID010;
 
 namespace Application.Contracts.Services.Identity;
 
 public interface IUserService : IScopedService
 {
-    Task<IResult> AssignRolesAsync(M008Request request);
-    Task<IResult> CreateAsync(M005Request request, string origin);
-    Task<IResult<M007Response>> GetAsync(string id);
+    Task<IResult> AssignRolesAsync(ID008Request request);
+    Task<IResult> CreateAsync(ID005Request request, string origin);
+    Task<IResult<ID007Response>> GetAsync(string id);
     Task<PaginatedResult<UserDto>> GetListAsync();
-    Task<IResult<M004Response>> GetRolesAsync(string id);
-    Task<IResult> ToggleStatusAsync(M006Request request);
+    Task<IResult<ID004Response>> GetRolesAsync(string id);
+    Task<IResult> ToggleStatusAsync(ID006Request request);
+    Task<IResult> ChangePasswordAsync(ID009Request request, string userId);
+    Task<PaginatedResult<UserDto>> GetListByFilterAsync(ID010Request request);
+    Task<IResult> DeleteAsync(string id);
 }

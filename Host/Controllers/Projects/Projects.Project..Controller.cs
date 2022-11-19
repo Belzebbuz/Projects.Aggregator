@@ -9,7 +9,6 @@ using SharedLibrary.ApiMessages.Projects.P003;
 using SharedLibrary.ApiMessages.Projects.P004;
 using SharedLibrary.ApiMessages.Projects.P010;
 using SharedLibrary.ApiMessages.Projects.P012;
-using SharedLibrary.ApiMessages.Projects.P014;
 using SharedLibrary.Authentication;
 using SharedLibrary.Routes;
 using SharedLibrary.Wrapper;
@@ -26,11 +25,7 @@ public partial class ProjectsController : BaseApiController
     [HttpGet]
     public async Task<PaginatedResult<ProjectShortDto>> GetAllProjectsAsync()
         => await Mediator.Send(new P002Request());
-	
-    [HttpGet("names/{text}")]
-	public async Task<IResult<ICollection<string>>> GetAllProjectsAsync(string text)
-		=> await Mediator.Send(new P014Request(text));
-	
+		
     [HttpPost("filter")]
     public async Task<PaginatedResult<ProjectShortDto>> GetProjectsByFilter(P012Request request)
         => await Mediator.Send(request);

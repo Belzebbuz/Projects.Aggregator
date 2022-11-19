@@ -1,5 +1,6 @@
 ﻿@page "/projects/{Id}"
 @using Clients.MAUI.Pages.Project.Loading
+@using Clients.MAUI.Pages.Project.PatchNotes
 @using Clients.MAUI.Pages.Project.Releases
 @using SharedLibrary.Authentication
 
@@ -83,6 +84,28 @@
 
                 }
             </MudExpansionPanels>
+        </MudItem>
+        <MudItem Class="slide-top mt-1 align-center d-flex justify-space-between" Style="--delay: 0.25s" xs="12">
+            <MudText Typo="Typo.h5">Список изменений</MudText>
+            <AuthorizeView Roles="@SHRoles.Dev">
+                <Authorized>
+                    <MudTooltip Text="Добавить запись в список изменений">
+                        <MudIconButton OnClick="AddPatchNoteAsync" Icon="@Icons.Filled.Add"/>
+                    </MudTooltip>
+                </Authorized>
+            </AuthorizeView>
+        </MudItem>
+        <MudItem Class="mt-2 mb-5 slide-top" Style="--delay: 0.30s" xs="12">
+            <MudExpansionPanels MultiExpansion=true>
+                @foreach (var note in _notes)
+                {
+                    <PatchNoteExpandedPanel Note="@note" ProjectId="_project.Id" OnRequestUpdate=@(async () => await LoadPatchNotesAsync()) />
+                }
+            </MudExpansionPanels>
+            
+        </MudItem>
+        <MudItem Class="d-flex align-self-end justify-center fade-in" xs="12">
+            <MudPagination Count="@_patchNotesPageCount" Selected="@_patchNotesSelectedPage" SelectedChanged="LoadPatchNotesAsync" />
         </MudItem>
     }
 

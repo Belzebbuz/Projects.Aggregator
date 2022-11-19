@@ -8,6 +8,8 @@ using SharedLibrary.ApiMessages.Projects.P013;
 using SharedLibrary.ApiMessages.Projects.P011;
 using SharedLibrary.ApiMessages.Projects.P016;
 using SharedLibrary.Wrapper;
+using SharedLibrary.ApiMessages.Projects.P017;
+using SharedLibrary.ApiMessages.Projects.P018;
 
 namespace SharedLibrary.Routes;
 
@@ -123,10 +125,17 @@ public class ProjectsEndpoints
 	/// <returns></returns>
 	public static string GetReleaseNoteRoute() => $"{Base}/releaseNotes";
 
-    /// <summary>
-    /// <strong>GET</strong> - Response <see cref="ICollection{T}"/> of <see cref="string"/>
-    /// </summary>
-    /// <param name="text"></param>
-    /// <returns></returns>
-    public static string GetProjectsNamesRoute(string text) => $"{Base}/names/{text}";
+
+	/// <summary>
+	/// POST - создать Request - <see cref="P017Request"/>
+	/// <para>
+	/// PUT - обновить Request - <see cref="P018Request"/>
+	/// </para>
+	/// DELETE - удалить
+	/// GET - получить все
+	/// </summary>
+	/// <returns></returns>
+	public static string GetPatchNoteRoute(Guid projectId) => $"{Base}/{projectId}/patchNotes";
+
+    public static string GetSinglePatchNoteRoute(Guid projectId, Guid patchNoteId) => $"{Base}/{projectId}/patchNotes/{patchNoteId}";
 }

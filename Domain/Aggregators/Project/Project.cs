@@ -19,6 +19,9 @@ public sealed class Project : AuditableEntity, IAggregateRoot
     [MaxLength(20)]
     public string ExeFileName { get; private set; }
 
+    private ICollection<PatchNote> _patchNotes;
+    public IReadOnlyCollection<PatchNote> PatchNotes => _patchNotes.ToList();
+
     private HashSet<Tag> _tags;
     public IReadOnlyCollection<Tag> Tags => _tags;
 
@@ -137,4 +140,26 @@ public sealed class Project : AuditableEntity, IAggregateRoot
         _tags.RemoveWhere(x => !newTags.Contains(x));
         newTags.ForEach(x => _tags.Add(x));
     }
+
+    public void AddPatchNote(string text)
+    {
+        ThrowHelper.NotLoadedProperty(_patchNotes, nameof(_patchNotes), nameof(Project), Id.ToString());
+        _patchNotes.Add(new(text));
+    }
+
+    public void UpdatePatchNote(Guid patchNoteId, string text)
+    {
+		ThrowHelper.NotLoadedProperty(_patchNotes, nameof(_patchNotes), nameof(Project), Id.ToString());
+        var patchNote = _patchNotes.SingleOrDefault(x => x.Id == patchNoteId);
+        ThrowHelper.NotFoundEntity(patchNote, patchNoteId.ToString(), nameof(PatchNote));
+        patchNote.Update(text);
+	}
+
+	public void RemovePatchNote(Guid patchNoteId)
+	{
+		ThrowHelper.NotLoadedProperty(_patchNotes, nameof(_patchNotes), nameof(Project), Id.ToString());
+		var patchNote = _patchNotes.SingleOrDefault(x => x.Id == patchNoteId);
+		ThrowHelper.NotFoundEntity(patchNote, patchNoteId.ToString(), nameof(PatchNote));
+		_patchNotes.Remove(patchNote);
+	}
 }

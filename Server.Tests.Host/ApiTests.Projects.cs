@@ -8,6 +8,8 @@ using SharedLibrary.ApiMessages.Projects.P011;
 using SharedLibrary.ApiMessages.Projects.P012;
 using SharedLibrary.ApiMessages.Projects.P013;
 using SharedLibrary.ApiMessages.Projects.P016;
+using SharedLibrary.ApiMessages.Projects.P017;
+using SharedLibrary.ApiMessages.Projects.P020;
 using SharedLibrary.Routes;
 using SharedLibrary.Wrapper;
 using Shouldly;
@@ -442,6 +444,42 @@ public partial class ApiTests : IDisposable
 		content.Succeeded.ShouldBeFalse();
 	}
 
+    [Fact]
+    public async Task add_patch_note_to_project_should_be_success()
+    {
+		await ShouldSuccessGetAccessTokenResult(_rootUserCredentials.Email, _rootUserCredentials.Password);
+		var appId = await ShouldSuccessCreateNewProject("English test app", "Telegram bot web api app",
+			 "Windows 10", "Client.exe", new List<TagDto> { new TagDto() { Value = "Test tag"} });
+
+        var request = new P017Request() { ProjectId = Guid.Parse(appId), Text = "A lot of new stuff" };
+        var response = await _client.PostAsJsonAsync(ProjectsEndpoints.GetPatchNoteRoute(Guid.Parse(appId)), request);
+        var result = await response.ToResult();
+        result.Succeeded.ShouldBeTrue();
+
+        var getResponse = await _client.GetAsync(ProjectsEndpoints.GetPatchNoteRoute(Guid.Parse(appId)));
+        var getResult = await getResponse.ToPaginatedResult<PatchNoteDto>();
+        getResult.Succeeded.ShouldBeTrue();
+        getResult.Data.ShouldNotBeEmpty();
+        getResult.HasNextPage.ShouldBeFalse();
+
+		var request1 = new P017Request() { ProjectId = Guid.Parse(appId), Text = "A lot of new stuff 1" };
+	    await _client.PostAsJsonAsync(ProjectsEndpoints.GetPatchNoteRoute(Guid.Parse(appId)), request1);
+		var request2 = new P017Request() { ProjectId = Guid.Parse(appId), Text = "A lot of new stuff 2" };
+		await _client.PostAsJsonAsync(ProjectsEndpoints.GetPatchNoteRoute(Guid.Parse(appId)), request2);
+		var request3 = new P017Request() { ProjectId = Guid.Parse(appId), Text = "A lot of new stuff 3" };
+		await _client.PostAsJsonAsync(ProjectsEndpoints.GetPatchNoteRoute(Guid.Parse(appId)), request3);
+
+        _client.DefaultRequestHeaders.Add(Headers.Page, "1");
+        _client.DefaultRequestHeaders.Add(Headers.ItemsPerPage, "2");
+
+		var getResponse1 = await _client.GetAsync(ProjectsEndpoints.GetPatchNoteRoute(Guid.Parse(appId)));
+		var getResult1 = await getResponse1.ToPaginatedResult<PatchNoteDto>();
+		getResult1.Succeeded.ShouldBeTrue();
+		getResult1.Data.ShouldNotBeEmpty();
+        getResult1.Data.Count.ShouldBe(2);
+		getResult1.HasNextPage.ShouldBeTrue();
+        getResult1.TotalCount.ShouldBe(4);
+	}
 	private async Task<HttpResponseMessage> UploadRelease(string appId, string filePath)
     {
         using var multipartFormContent = new MultipartFormDataContent();

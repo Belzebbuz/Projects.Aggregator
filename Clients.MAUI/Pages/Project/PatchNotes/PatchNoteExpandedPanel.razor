@@ -1,0 +1,24 @@
+﻿@using SharedLibrary.Authentication
+<MudExpansionPanel HideIcon=true @bind-IsExpanded="_isOpen">
+    <TitleContent>
+        <MudContainer Class="d-flex align-center gap-4 ml-n4">
+            <MudIcon Icon=@(_isOpen ? Icons.Filled.KeyboardArrowDown : Icons.Filled.KeyboardArrowRight) />
+            <MudText Typo="Typo.body2">@($"Запись {Note.LastModifiedOn} от {Note.CreatedByEmail}")</MudText>
+                <div class="ml-auto d-flex gap-4 align-center justify-end">
+                    <AuthorizeView Roles="@SHRoles.Dev">
+                    <Authorized>
+                        <MudIconButton OnClick="DeletePatchNoteAsync"
+                                       Icon="@Icons.Material.Outlined.Delete"
+                                       Variant=" Variant.Outlined"
+                                       Size="Size.Medium" />
+                    </Authorized>
+                </AuthorizeView>
+                </div>
+            </MudContainer>
+
+        </TitleContent>
+        <ChildContent>
+            <MudText Style="white-space: pre-line;">@Note.Text</MudText>
+        </ChildContent>
+    </MudExpansionPanel>
+

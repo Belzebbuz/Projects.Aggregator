@@ -1,12 +1,16 @@
 ﻿using App.Shared.ApiMessages.Projects.P007;
 using Clients.MAUI.Application.Contracts.Services;
 using Clients.MAUI.Infrastructure.Extensions;
+using MediatR;
 using SharedLibrary.ApiMessages.Projects.Dto;
 using SharedLibrary.ApiMessages.Projects.P003;
 using SharedLibrary.ApiMessages.Projects.P004;
 using SharedLibrary.ApiMessages.Projects.P011;
 using SharedLibrary.ApiMessages.Projects.P012;
 using SharedLibrary.ApiMessages.Projects.P013;
+using SharedLibrary.ApiMessages.Projects.P017;
+using SharedLibrary.ApiMessages.Projects.P018;
+using SharedLibrary.ApiMessages.Projects.P020;
 using SharedLibrary.Routes;
 using SharedLibrary.Wrapper;
 using System.Net.Http.Headers;
@@ -100,12 +104,6 @@ public class ProjectsService : IProjectService
 		return await response.ToResult<ProjectDto>();
 	}
 
-	public async Task<IResult<List<string>>> GetProjectNames(string text)
-	{
-		var response = await _client.GetAsync(ProjectsEndpoints.GetProjectsNamesRoute(text));
-		return await response.ToResult<List<string>>();
-	}
-
 	public async Task<PaginatedResult<ProjectShortDto>> GetProjectsByFilterAsync(P012Request request, int page, int itemsPerPage)
 	{
 		_client.AddOrUpdatePaginationHeaders(page, itemsPerPage);
@@ -134,5 +132,30 @@ public class ProjectsService : IProjectService
 			return Result<List<TagDto>>.Success(result.Data.Tags.ToList());
 		}
 		return await response.ToResult<List<TagDto>>();
+	}
+
+	public async Task<IResult> AddPatchNoteAsync(P017Request request)
+	{
+		var response = await _client.PostAsJsonAsync(ProjectsEndpoints.GetPatchNoteRoute(request.ProjectId), request);
+		return await response.ToResult();
+	}
+
+	public async Task<IResult> UpdatePatchNoteAsync(P018Request request)
+	{
+		var response = await _client.PutAsJsonAsync(ProjectsEndpoints.GetPatchNoteRoute(request.ProjectId), request);
+		return await response.ToResult();
+	}
+
+	public async Task<IResult> DeletePatchNoteAsync(Guid projectId, Guid patchNoteId)
+	{
+		var response = await _client.DeleteAsync(ProjectsEndpoints.GetSinglePatchNoteRoute(projectId, patchNoteId));
+		return await response.ToResult();
+	}
+
+	public async Task<PaginatedResult<PatchNoteDto>> GetPatchNotesAsync(Guid projectId, int page = 1, int itemsPerPage = 5)
+	{
+		_client.AddOrUpdatePaginationHeaders(page, itemsPerPage);
+		var response = await _client.GetAsync(ProjectsEndpoints.GetPatchNoteRoute(projectId));
+		return await response.ToPaginatedResult<PatchNoteDto>();
 	}
 }

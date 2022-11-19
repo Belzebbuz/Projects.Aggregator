@@ -3,7 +3,11 @@ using SharedLibrary.ApiMessages.Projects.Dto;
 using SharedLibrary.ApiMessages.Projects.P003;
 using SharedLibrary.ApiMessages.Projects.P004;
 using SharedLibrary.ApiMessages.Projects.P012;
+using SharedLibrary.ApiMessages.Projects.P017;
+using SharedLibrary.ApiMessages.Projects.P018;
+using SharedLibrary.ApiMessages.Projects.P020;
 using SharedLibrary.Wrapper;
+using System.Text;
 
 namespace Clients.MAUI.Application.Contracts.Services;
 
@@ -21,7 +25,11 @@ public interface IProjectService : ITransientService
     public Task<IResult<ICollection<TagDto>>> GetAllTagsAsync();
     public Task<IResult> AddTagToProjectAsync(Guid projectId, Guid tagId);
     public Task<IResult> DeleteTagAsync(Guid projectId, Guid TagId);
-    public Task<IResult<List<string>>> GetProjectNames(string text);
     public Task<IResult> AddOrUpdateReleaseNote(Guid projectId, Guid releaseId, string text);
     public Task<IResult<List<TagDto>>> GetTagsByNameAsync(string value);
+
+    public Task<IResult> AddPatchNoteAsync(P017Request request);
+    public Task<IResult> UpdatePatchNoteAsync(P018Request request);
+    public Task<IResult> DeletePatchNoteAsync(Guid projectId, Guid patchNoteId);
+    public Task<PaginatedResult<PatchNoteDto>> GetPatchNotesAsync(Guid projectId, int page = 1, int itemsPerPage = 5);
 }

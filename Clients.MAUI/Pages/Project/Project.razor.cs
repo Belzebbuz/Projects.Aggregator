@@ -1,7 +1,9 @@
+using Clients.MAUI.Pages.Project.Releases;
 using Clients.MAUI.Pages.SharedForms.Dialogs;
 using Clients.MAUI.Utilities;
 using Microsoft.AspNetCore.Components;
 using SharedLibrary.ApiMessages.Projects.Dto;
+using SharedLibrary.ApiMessages.Projects.P020;
 
 namespace Clients.MAUI.Pages.Project;
 
@@ -10,10 +12,15 @@ public partial class Project
 	private bool _isLoaded = false;
 	[Parameter] public string Id { get; set; }
 	private ProjectDto _project = new();
+	private List<PatchNoteDto> _notes = new ();
+	private int _patchNotesSelectedPage = 1;
+	private int _patchNotesPerPage = 5;
+	private int _patchNotesPageCount;
 	protected override async Task OnInitializedAsync()
 	{
 		_isLoaded = false;
 		await LoadAsync();
+		await LoadPatchNotesAsync();
 		_isLoaded = true;
 	}
 
@@ -29,6 +36,29 @@ public partial class Project
 		_project = project;
 	}
 
+	private async Task LoadPatchNotesAsync(int selectedPage = 1)
+	{
+		_patchNotesSelectedPage = selectedPage;
+		var notesResult = await _projectService.GetPatchNotesAsync(_project.Id, _patchNotesSelectedPage, _patchNotesPerPage);
+		if (notesResult.Data != null)
+		{
+			_notes = notesResult.Data;
+			_patchNotesPageCount = notesResult.TotalPages;
+		}
+	}
+
+	private async Task AddPatchNoteAsync()
+	{
+		var parameters = new DialogParameters();
+		var dialog = _dialogService.Show<AddPatchNoteDialog>("Добавить описание изменения", parameters, new DialogOptions() { FullWidth = true });
+		var dialogResult = await dialog.Result;
+		if (!dialogResult.Cancelled)
+		{
+			var result = await _projectService.AddPatchNoteAsync(new(_project.Id, (string)dialogResult.Data));
+			_snackBar.HandleResult(result, "Описание добавлено.");
+		}
+		await LoadPatchNotesAsync();
+	}
 	private bool _processingLoadToServer = false;
 	private async Task UploadFileAsync()
 	{

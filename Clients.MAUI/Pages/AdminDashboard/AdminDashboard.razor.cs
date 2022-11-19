@@ -43,7 +43,7 @@ public partial class AdminDashboard
 		var parameters = new DialogParameters();
 		parameters.Add(nameof(AssignRolesDialog.UserId), userId);
 		var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, DisableBackdropClick = true };
-		var dialog = _dialogService.Show<AssignRolesDialog>("Фильтр по тегам", parameters, options);
+		var dialog = _dialogService.Show<AssignRolesDialog>("Изменить роли", parameters, options);
 		var dialogResult = await dialog.Result;
 	}
 

@@ -362,3 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 Host/Files
+Host/Projects.Aggregator.db
+Host/Projects.Aggregator.db-shm
+Host/Projects.Aggregator.db-wal

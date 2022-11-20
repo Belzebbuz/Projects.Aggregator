@@ -1,3 +1,4 @@
+using Clients.MAUI.Pages.SharedForms.Dialogs;
 using Clients.MAUI.Utilities;
 using Microsoft.AspNetCore.Components.Authorization;
 using SharedLibrary.ApiMessages.Identity.ID001;
@@ -47,4 +48,18 @@ public partial class Login
             _passwordInput = InputType.Text;
         }
     }
+
+    public async Task SetBaseAddressAsync()
+    {
+        var baseAddress = await _appInfoService.GetServerUrlAsync();
+        var parameters = new DialogParameters();
+        parameters.Add(nameof(SelectServerAddress.ServerAddress), baseAddress);
+		var dialog = _dialogService.Show<SelectServerAddress>("Установить адрес сервера", parameters, new DialogOptions() { FullWidth = true, CloseButton = true });
+		var dialogResult = await dialog.Result;
+        if (!dialogResult.Cancelled)
+        {
+			await _appInfoService.SetServerUrlAsync((string)dialogResult.Data);
+            _snackBar.Add("Нужно перезайти в приложение!", Severity.Warning);
+		}
+	}
 }

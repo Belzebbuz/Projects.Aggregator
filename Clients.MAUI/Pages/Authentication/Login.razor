@@ -6,8 +6,11 @@
     <MudGrid Class="slide-top">
         <DataAnnotationsValidator />
         <MudItem xs="12">
-            <div class="d-flex justify-center">
+            <div class="d-flex align-center justify-center">
                 <MudText Typo="Typo.h4">Вход</MudText>
+                <MudTooltip Text="Изменить адрес сервера">
+                    <MudIconButton Size="Size.Small" Icon="@Icons.Filled.Settings" Class="ml-3 mt-2" OnClick="SetBaseAddressAsync" />
+                </MudTooltip>
             </div>
         </MudItem>
         <MudItem xs="12">

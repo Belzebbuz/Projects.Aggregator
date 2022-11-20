@@ -1,5 +1,7 @@
 ﻿using Clients.MAUI.Application;
+using Clients.MAUI.Application.Contracts.Services;
 using Clients.MAUI.Infrastructure.Authentication;
+using Clients.MAUI.Infrastructure.Constants;
 using Clients.MAUI.Infrastructure.Services;
 using MediatR;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -10,7 +12,9 @@ namespace Clients.MAUI.Infrastructure;
 
 public static class Startup
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    private static string _baseAddress = "http://localhost:5195";
+
+	public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         return services
 			.AddMudServices()
@@ -26,12 +30,16 @@ public static class Startup
     public static IServiceCollection AddHttpClient(this IServiceCollection services)
     {
 
-        services.AddScoped(sp =>
-            sp.GetRequiredService<IHttpClientFactory>()
-            .CreateClient("MauiClient"))
-            .AddHttpClient("MauiClient", client =>
+        services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("MauiClient"))
+            .AddHttpClient("MauiClient", async client =>
             {
-                client.BaseAddress = new Uri("http://localhost:5195");
+                var baseAddress = await SecureStorage.GetAsync(StorageConstants.ServerURL);
+                if(baseAddress == null)
+                {
+                    baseAddress = _baseAddress;
+                    await SecureStorage.SetAsync(StorageConstants.ServerURL, _baseAddress);
+                }
+				client.BaseAddress = new Uri(baseAddress);
             })
             .AddHttpMessageHandler<AuthenticationHeaderHandler>();
         return services;

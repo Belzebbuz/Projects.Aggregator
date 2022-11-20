@@ -1,4 +1,5 @@
 ﻿using Clients.MAUI.Application.Contracts.Services;
+using Clients.MAUI.Infrastructure.Constants;
 using SharedLibrary.Routes;
 using SharedLibrary.Wrapper;
 
@@ -13,9 +14,19 @@ public class AppInfoService : IAppInfoService
 		_client = client;
 	}
 
+	public async Task<string> GetServerUrlAsync()
+	{
+		return await SecureStorage.GetAsync(StorageConstants.ServerURL);
+	}
+
 	public async Task<IResult<string>> GetServerVersionAsync()
 	{
 		var response = await _client.GetAsync(CheckEndpoints.Base);
 		return await response.ToResult<string>();
+	}
+
+	public async Task SetServerUrlAsync(string serverURL)
+	{
+		await SecureStorage.SetAsync(StorageConstants.ServerURL, serverURL);
 	}
 }

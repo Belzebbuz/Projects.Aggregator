@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Host.Controllers.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SharedLibrary.ApiMessages.Projects.P017;
 using SharedLibrary.ApiMessages.Projects.P018;
 using SharedLibrary.ApiMessages.Projects.P019;
@@ -14,14 +16,16 @@ public partial class ProjectsController
 {
 	[HttpGet("{projectId}/patchNotes/")]
 	[Authorize(Roles = SHRoles.Admin)]
-	public async Task<IResult> DeletePatchNoteAsync(Guid projectId)
+	[OpenApiOperation("Получить список патч-ноутов. ", OpenApiDescriptonConstants.PerPageDescription)]
+	public async Task<PaginatedResult<PatchNoteDto>> GetPatchNoteAsync(Guid projectId)
 	{
 		return await Mediator.Send(new P020Request() { ProjectId = projectId});
 	}
 
 	[HttpPost("{projectId}/patchNotes")]
     [Authorize(Roles = SHRoles.Admin)]
-    public async Task<IResult> CreatePatchNoteAsync(Guid projectId, P017Request request)
+	[OpenApiOperation("Создать патч-ноут", "")]
+	public async Task<IResult> CreatePatchNoteAsync(Guid projectId, P017Request request)
     {
         if (projectId != request.ProjectId)
             return Result.Fail($"Route id: {projectId}, but body request id was {request.ProjectId}");
@@ -31,6 +35,7 @@ public partial class ProjectsController
 
 	[HttpPut("{projectId}/patchNotes")]
 	[Authorize(Roles = SHRoles.Admin)]
+	[OpenApiOperation("Изменить патч-ноут", "")]
 	public async Task<IResult> UpdatePatchNoteAsync(Guid projectId, P018Request request)
 	{
 		if (projectId != request.ProjectId)
@@ -41,6 +46,7 @@ public partial class ProjectsController
 
 	[HttpDelete("{projectId}/patchNotes/{patchNoteId}")]
 	[Authorize(Roles = SHRoles.Admin)]
+	[OpenApiOperation("Удалить патч-ноут", "")]
 	public async Task<IResult> DeletePatchNoteAsync(Guid projectId, Guid patchNoteId)
 	{
 		return await Mediator.Send(new P019Request(projectId, patchNoteId));

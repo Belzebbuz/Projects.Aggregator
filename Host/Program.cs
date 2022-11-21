@@ -21,12 +21,6 @@ try
 
     var app = builder.Build();
 
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
-
     await app.UseInfrastructure(app.Configuration);
     app.MapControllers();
     app.Run();

@@ -16,6 +16,7 @@ using SharedLibrary.Routes;
 using SharedLibrary.Wrapper;
 using IResult = SharedLibrary.Wrapper.IResult;
 using SharedLibrary.ApiMessages.Identity.ID010;
+using Host.Controllers.Common;
 
 namespace Host.Controllers.Identity
 {
@@ -34,59 +35,62 @@ namespace Host.Controllers.Identity
 		}
 
 		[HttpGet]
-		[OpenApiOperation("Get list of all users.", "")]
+		[OpenApiOperation("Получить список пользователей","Постраничный вывод списка пользователей.\n" + 
+			OpenApiDescriptonConstants.PerPageDescription)]
 		[Authorize(Roles = SHRoles.Admin)]
 		public async Task<PaginatedResult<UserDto>> GetListAsync()
 			=> await _userService.GetListAsync();
 
 		[HttpPost("search")]
 		[Authorize(Roles = SHRoles.Admin)]
+		[OpenApiOperation("Список пользователей по фильтру.", OpenApiDescriptonConstants.PerPageDescription)]
 		public async Task<PaginatedResult<UserDto>> GetListAsync(ID010Request request)
 			=> await _userService.GetListByFilterAsync(request);
 
 		[HttpGet("{id}")]
-		[OpenApiOperation("Get a user's details.", "")]
+		[OpenApiOperation("Подробное данные пользователя", "")]
 		public async Task<IResult<ID007Response>> GetByIdAsync(string id)
 
 			=> await _userService.GetAsync(id);
 
 		[HttpDelete("{id}")]
-		[OpenApiOperation("Get a user's details.", "")]
+		[OpenApiOperation("Удаление пользователя", "")]
 		[Authorize(Roles = SHRoles.Admin)]
 		public async Task<IResult> DeleteByIdAsync(string id)
 			=> await _userService.DeleteAsync(id);
 
 		[HttpGet("{id}/roles")]
-		[OpenApiOperation("Get a user's roles.", "")]
+		[OpenApiOperation("Получение ролей пользователя", "")]
 		[Authorize(Roles = SHRoles.Admin)]
 		public async Task<IResult<ID004Response>> GetRolesAsync(string id)
 			=> await _userService.GetRolesAsync(id);
 
 		[HttpPost]
-		[OpenApiOperation("Creates a new user.", "")]
+		[OpenApiOperation("Создание пользователя администратором системы", "")]
 		[Authorize(Roles = SHRoles.Admin)]
 		public async Task<IResult> CreateAsync(ID005Request request)
 		=> await _userService.CreateAsync(request, GetOriginFromRequest());
 
 		[HttpPost("self-register")]
 		[AllowAnonymous]
-		[OpenApiOperation("Anonymous user creates a user.", "")]
+		[OpenApiOperation("Самостоятельная регистрация", "")]
 		public async Task<IResult> SelfRegisterAsync(ID005Request request)
 			=> await _userService.CreateAsync(request, GetOriginFromRequest());
 
 		[HttpPost("toggle-status")]
 		[Authorize(Roles = SHRoles.Admin)]
+		[OpenApiOperation("Запретить пользователю проходить авторизацию", "")]
 		public async Task<IResult> ToggleUserStatus(ID006Request request)
 			=> await _userService.ToggleStatusAsync(request);
 
 		[HttpPost("roles")]
-		[OpenApiOperation("Update a user's assigned roles.", "")]
+		[OpenApiOperation("Изменить состояние ролей пользователя", "")]
 		[Authorize(Roles = SHRoles.Admin)]
 		public async Task<IResult> AssignRolesAsync(ID008Request request)
 			=> await _userService.AssignRolesAsync(request);
 
 		[HttpPost("change-password")]
-		[OpenApiOperation("Update a user's assigned roles.", "")]
+		[OpenApiOperation("Изменить пароль", "")]
 		public async Task<IResult> ChangePasswordAsync(ID009Request request)
 			=> await _userService.ChangePasswordAsync(request, _currentUser.GetUserId().ToString());
 

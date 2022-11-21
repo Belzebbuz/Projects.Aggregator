@@ -19,13 +19,12 @@ public class TokenController : ControllerBase
 
 	[HttpPost]
 	[AllowAnonymous]
-	[OpenApiOperation("Request an access token using credentials.", "")]
+	[OpenApiOperation("Получить токен по электронной почте и паролю", "")]
 	public async Task<IResult<ID001Response>> GetTokenAsync(ID001Request request, CancellationToken cancellationToken)
 		=> await _tokenService.GetTokenAsync(request, GetIpAddress(), cancellationToken);
 
 	[HttpPost("refresh")]
 	[AllowAnonymous]
-	[OpenApiOperation("Request an access token using a refresh token.", "")]
 	public async Task<IResult<ID001Response>> RefreshAsync(ID002Request request)
 		=> await _tokenService.RefreshTokenAsync(request, GetIpAddress());
 

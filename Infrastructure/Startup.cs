@@ -4,6 +4,7 @@ using Infrastructure.Context;
 using Infrastructure.Identity;
 using Infrastructure.Localization;
 using Infrastructure.Middleware;
+using Infrastructure.OpenApi;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +25,7 @@ public static class Startup
             .AddExceptionMiddleware()
             .AddPaginationMiddleware()
             .AddLocalization(config)
+            .AddOpenApiDocumentation(config)
             .AddServices()
             .AddCors(opt => opt.AddPolicy("CorsPolicy", policy => policy.AllowAnyHeader()
                                                                 .AllowAnyMethod()
@@ -42,5 +44,7 @@ public static class Startup
         app.UseCurrentUser();
         app.UseRequestLogging(config);
         app.UsePaginationMiddleware();
-    }
+        app.UseOpenApiDocumentation(config);
+
+	}
 }

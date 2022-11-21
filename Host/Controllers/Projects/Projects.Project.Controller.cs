@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SharedLibrary.ApiMessages.Projects.Dto;
 using SharedLibrary.ApiMessages.Projects.P001;
 using SharedLibrary.ApiMessages.Projects.P002;
@@ -23,30 +24,36 @@ namespace Host.Controllers.Projects;
 public partial class ProjectsController : BaseApiController
 {
     [HttpGet]
+    [OpenApiOperation("Получить список всех проектов." , OpenApiDescriptonConstants.PerPageDescription)]
     public async Task<PaginatedResult<ProjectShortDto>> GetAllProjectsAsync()
         => await Mediator.Send(new P002Request());
 		
     [HttpPost("filter")]
-    public async Task<PaginatedResult<ProjectShortDto>> GetProjectsByFilter(P012Request request)
+	[OpenApiOperation("Получить список проектов по фильтру." , OpenApiDescriptonConstants.PerPageDescription)]
+	public async Task<PaginatedResult<ProjectShortDto>> GetProjectsByFilter(P012Request request)
         => await Mediator.Send(request);
 
     [HttpPost]
-    [Authorize(Roles = SHRoles.Dev)]
-    public async Task<IResult> InitialCreateProjectAsync(P003Request request)
+	[OpenApiOperation("Создание проекта", "")]
+	[Authorize(Roles = SHRoles.Dev)]
+	public async Task<IResult> InitialCreateProjectAsync(P003Request request)
         => await Mediator.Send(request);
 
     [HttpPut]
-    [Authorize(Roles = SHRoles.Dev)]
-    public async Task<IResult> UpdateProjectAsync(P004Request request)
+	[OpenApiOperation("Обновить детали проекта", "")]
+	[Authorize(Roles = SHRoles.Dev)]
+	public async Task<IResult> UpdateProjectAsync(P004Request request)
         => await Mediator.Send(request);
 
     [HttpGet("{id}")]
-    public async Task<IResult<P001Response>> GetProjectByIdAsync(Guid id)
+	[OpenApiOperation("Получить подробное описание проекта", "")]
+	public async Task<IResult<P001Response>> GetProjectByIdAsync(Guid id)
         => await Mediator.Send(new P001Request(id));
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = SHRoles.Dev)]
-    public async Task<IResult> DeleteProjectAsync(Guid id)
+	[OpenApiOperation("Удаление проекта со всеми релизами", "")]
+	[Authorize(Roles = SHRoles.Dev)]
+	public async Task<IResult> DeleteProjectAsync(Guid id)
         => await Mediator.Send(new P010Request(id));
 
 

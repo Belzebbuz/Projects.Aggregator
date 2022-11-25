@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using SharedLibrary.Wrapper;
 
-namespace App.Shared.ApiMessages.Projects.P007;
+namespace SharedLibrary.ApiMessages.Projects.P007;
 
 /// <summary>
 /// Add project tag

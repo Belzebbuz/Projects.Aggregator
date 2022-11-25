@@ -1,4 +1,4 @@
-﻿using SharedLibrary.ApiMessages.Projects.Dto;
+﻿using SharedLibrary.ApiMessages.CommonDTO;
 
 namespace SharedLibrary.ApiMessages.BugReports.Dto;
 

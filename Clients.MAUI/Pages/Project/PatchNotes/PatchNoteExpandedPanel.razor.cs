@@ -1,7 +1,7 @@
 using Clients.MAUI.Pages.SharedForms.Dialogs;
 using Clients.MAUI.Utilities;
 using Microsoft.AspNetCore.Components;
-using SharedLibrary.ApiMessages.Projects.P020;
+using SharedLibrary.ApiMessages.Projects.Dto;
 
 namespace Clients.MAUI.Pages.Project.PatchNotes;
 

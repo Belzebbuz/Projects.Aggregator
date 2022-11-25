@@ -1,4 +1,4 @@
-﻿namespace SharedLibrary.ApiMessages.Projects.Dto;
+﻿namespace SharedLibrary.ApiMessages.CommonDTO;
 
 public class AuditDto
 {

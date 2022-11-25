@@ -1,84 +1,175 @@
 ﻿using Application.Contracts.Services;
 using Domain.Aggregators.Project;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
+using SharedLibrary;
 using SharedLibrary.Helpers;
 using SharedLibrary.Wrapper;
 using System.Diagnostics;
+using System.Drawing.Text;
 using System.IO;
 using System.IO.Compression;
+using System.Net.Mime;
 using System.Reflection.Metadata.Ecma335;
 
 namespace Infrastructure.Common.Services.FileStorage;
 
 internal class FileStorageLocalService : IFileStorageService
 {
-    private const string RootProjectsFolder = "Files\\Projects";
-    private readonly string _tempFolder = $"Files\\Temp\\{Guid.NewGuid()}";
-    private const string BugReportsImagesFolder = "Files\\BugReports";
-    public void DeleteFiles(IEnumerable<string> filePaths)
-    {
-        foreach (var url in filePaths)
-        {
-            if (File.Exists(url))
-                File.Delete(url);
-        }
-    }
+	private const string RootProjectsFolder = "Files\\Projects";
+	private readonly string _tempFolder = $"Files\\Temp\\{Guid.NewGuid()}";
+	private const string BugReportsImagesFolder = "Files\\BugReports";
+	private const string AvailableFileExtension = ".zip";
+	private readonly IHttpContextAccessor _httpContext;
+	private readonly ILogger<FileStorageLocalService> _logger;
 
-    public void DeleteSingleFile(string url)
-    {
-        if (File.Exists(url))
-            File.Delete(url);
-    }
+	public FileStorageLocalService(IHttpContextAccessor httpContext, ILogger<FileStorageLocalService> logger)
+	{
+		_httpContext = httpContext;
+		_logger = logger;
+	}
+	public void DeleteFiles(IEnumerable<string> filePaths)
+	{
+		foreach (var url in filePaths)
+		{
+			if (File.Exists(url))
+				File.Delete(url);
+		}
+	}
 
-    public FileStream DownloadAsync(string url)
-    {
-        ThrowHelper.FileNotExists(url);
-        return new FileStream(url, FileMode.Open, FileAccess.Read);
-    }
+	public void DeleteSingleFile(string url)
+	{
+		if (File.Exists(url))
+			File.Delete(url);
+	}
 
-    public async Task<IResult<IZipUploadData>> UploadZipProjectAsync(Guid releaseId, string projectName, string fileName, string exeFile, Stream fileStream)
-    {
-        try
-        {
-            if (Path.GetExtension(fileName) != ".zip")
-                return Result<IZipUploadData>.Fail("Archive must be .zip!");
+	public FileStream DownloadAsync(string url)
+	{
+		ThrowHelper.FileNotExists(url);
+		return new FileStream(url, FileMode.Open, FileAccess.Read);
+	}
 
-            string projectFolder = Path.Combine(RootProjectsFolder, releaseId.ToString());
+	public async Task<IResult<string>> SaveFileStreamingAsync(string folder)
+	{
+		try
+		{
+			var request = _httpContext.HttpContext.Request;
+			var boundary = HeaderUtilities.RemoveQuotes(
+				MediaTypeHeaderValue.Parse(request.ContentType).Boundary
+			).Value;
 
-            if (!Directory.Exists(projectFolder))
-                Directory.CreateDirectory(projectFolder);
+			var reader = new MultipartReader(boundary, request.Body);
+			var section = await reader.ReadNextSectionAsync();
 
-            if (!Directory.Exists(_tempFolder))
-                Directory.CreateDirectory(_tempFolder);
+			string projectFolder = Path.Combine(RootProjectsFolder, folder);
+			if (!Directory.Exists(projectFolder))
+				Directory.CreateDirectory(projectFolder);
 
-            using var zipArchive = new ZipArchive(fileStream);
-            var exefile = zipArchive.Entries.SingleOrDefault(x => x.Name.Contains(exeFile));
-            if (exefile == null)
-                return await Result<IZipUploadData>.FailAsync($"Exe file：{exeFile} not found!");
+			var saveFileResult = await SaveFileAsync(reader, section, projectFolder);
+			if (!saveFileResult.Succeeded)
+				return Result<string>.Fail(saveFileResult.Messages);
 
-            var tempExeFile = Path.Combine(_tempFolder, Path.GetFileName(exefile.Name));
-            exefile.ExtractToFile(tempExeFile);
-            var fileVersion = FileVersionInfo.GetVersionInfo(tempExeFile).FileVersion;
-            var productVersion = FileVersionInfo.GetVersionInfo(tempExeFile).ProductVersion;
-            var gitBranch = productVersion.Contains("Branch")
-                ? productVersion.Split("Branch")[1].Split("Sha")[0].Replace(".", "")
-                : String.Empty;
-            var gitSha = productVersion.Contains("Sha")
-                ? productVersion.Split("Sha")[1].Replace(".", "")
-                : String.Empty;
-            Directory.Delete(_tempFolder, true);
+			return Result<string>.Success(data: saveFileResult.Data);
 
-            string filePath = Path.Combine(projectFolder, $"{Guid.NewGuid().ToString()}{Path.GetExtension(fileName)}");
-            await using var fs = File.Create(filePath);
+		}
+		catch (Exception ex)
+		{
+			throw ex;
+		}
+	}
 
-            await fileStream.CopyToAsync(fs);
-            await fs.FlushAsync();
-            return Result<IZipUploadData>.Success(new ZipUploadDataResult(fileVersion, gitSha, gitBranch, filePath));
-        }
-        finally
-        {
-            fileStream?.Dispose();
-        }
+	private async Task<IResult<string>> SaveFileAsync(MultipartReader reader, MultipartSection? section, string folderPath)
+	{
+		try
+		{
+			string fileFullPath = string.Empty;
+			while (section != null)
+			{
+				var hasContentDispositionHeader = ContentDispositionHeaderValue.TryParse(
+					section.ContentDisposition, out var contentDisposition
+				);
+				if (hasContentDispositionHeader)
+				{
+					if (contentDisposition.DispositionType.Equals("form-data") &&
+					(!string.IsNullOrEmpty(contentDisposition.FileName.Value) ||
+					!string.IsNullOrEmpty(contentDisposition.FileNameStar.Value)))
+					{
+						fileFullPath = CreateUploadFileFullPath(folderPath, contentDisposition.FileName.Value);
+						await using var fs = File.Create(fileFullPath);
+						await section.Body.CopyToAsync(fs);
+						await fs.FlushAsync();
+					}
+				}
+				section = await reader.ReadNextSectionAsync();
+			}
+			return Result<string>.Success(data: fileFullPath);
+		}
+		catch (Exception ex)
+		{
+			return Result<string>.Fail(ex.Message);
+		}
+		
+	}
 
-    }
+	private string CreateUploadFileFullPath(string folderPath, string fileName)
+	{
+		var fileExtension = Path.GetExtension(fileName);
+		return Path.Combine(folderPath, $"{Guid.NewGuid()}{fileExtension}");
+	}
 
+	public async Task<IResult<IExeFileVersionInfo>> GetExeFileVersionAsync(string zipFilePath, string exeFileName)
+	{
+		try
+		{
+			if (!Directory.Exists(_tempFolder))
+				Directory.CreateDirectory(_tempFolder);
+
+			using var zipArchive = new ZipArchive(File.OpenRead(zipFilePath));
+			var exefile = zipArchive.Entries.SingleOrDefault(x => x.Name == exeFileName);
+			if (exefile == null)
+			{
+				zipArchive?.Dispose();
+				return await Result<IExeFileVersionInfo>.FailAsync($"Exe file：{exeFileName} not found!");
+			}
+
+			var tempExeFile = Path.Combine(_tempFolder, Path.GetFileName(exefile.Name));
+			exefile.ExtractToFile(tempExeFile);
+
+			var fileVersion = FileVersionInfo.GetVersionInfo(tempExeFile).FileVersion;
+			var productVersion = FileVersionInfo.GetVersionInfo(tempExeFile).ProductVersion;
+			if (productVersion != null)
+			{
+				var gitBranch = productVersion.Contains("Branch")
+				? productVersion.Split("Branch")[1].Split("Sha")[0].Replace(".", "")
+				: String.Empty;
+				var gitSha = productVersion.Contains("Sha")
+					? productVersion.Split("Sha")[1].Replace(".", "")
+					: String.Empty;
+				return Result<IExeFileVersionInfo>.Success(data: new ExeFileVersionInfo(fileVersion, gitSha, gitBranch));
+			}
+			return Result<IExeFileVersionInfo>.Success(new ExeFileVersionInfo(fileVersion, null, null));
+		}
+		catch (Exception ex)
+		{
+			return Result<IExeFileVersionInfo>.Fail(ex.Message);
+		}
+
+	}
+}
+
+internal class ExeFileVersionInfo  : IExeFileVersionInfo
+{
+	public ExeFileVersionInfo(string version, string? gitSha, string? gitBranch)
+	{
+		Version = version;
+		GitSha = gitSha;
+		GitBranch = gitBranch;
+	}
+
+	public string Version { get; }
+	public string? GitSha { get; }
+	public string? GitBranch { get;}
 }

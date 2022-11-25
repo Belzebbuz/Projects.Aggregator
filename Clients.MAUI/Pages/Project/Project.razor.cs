@@ -3,7 +3,6 @@ using Clients.MAUI.Pages.SharedForms.Dialogs;
 using Clients.MAUI.Utilities;
 using Microsoft.AspNetCore.Components;
 using SharedLibrary.ApiMessages.Projects.Dto;
-using SharedLibrary.ApiMessages.Projects.P020;
 
 namespace Clients.MAUI.Pages.Project;
 
@@ -60,6 +59,7 @@ public partial class Project
 		await LoadPatchNotesAsync();
 	}
 	private bool _processingLoadToServer = false;
+	private double _blockIndex = 0;
 	private async Task UploadFileAsync()
 	{
 		_processingLoadToServer = true;
@@ -72,12 +72,10 @@ public partial class Project
 
 		var uploadResult = await _projectService.UploadReleaseAsync(_project.Id, selectResult.FileName,
 			selectResult.FullPath, selectResult.ContentType);
-
+		_processingLoadToServer = false;
 		_snackBar.HandleResult(uploadResult, "Релиз добавлен.");
 		await OnInitializedAsync();
-		_processingLoadToServer = false;
 	}
-
 	private async Task<FileResult> SelectZipFileAsync()
 	{
 		_processingLoadToServer = true;

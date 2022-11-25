@@ -33,7 +33,8 @@ public static class Startup
         services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("MauiClient"))
             .AddHttpClient("MauiClient", async client =>
             {
-                var baseAddress = await SecureStorage.GetAsync(StorageConstants.ServerURL);
+                client.Timeout = TimeSpan.FromMinutes(10);
+				var baseAddress = await SecureStorage.GetAsync(StorageConstants.ServerURL);
                 if(baseAddress == null)
                 {
                     baseAddress = _baseAddress;

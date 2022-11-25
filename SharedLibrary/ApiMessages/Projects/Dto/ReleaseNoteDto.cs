@@ -1,4 +1,6 @@
-﻿namespace SharedLibrary.ApiMessages.Projects.Dto;
+﻿using SharedLibrary.ApiMessages.CommonDTO;
+
+namespace SharedLibrary.ApiMessages.Projects.Dto;
 
 public class ReleaseNoteDto : AuditDto
 {

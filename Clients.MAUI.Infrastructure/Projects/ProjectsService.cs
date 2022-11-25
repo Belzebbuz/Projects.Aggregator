@@ -1,16 +1,14 @@
-﻿using App.Shared.ApiMessages.Projects.P007;
-using Clients.MAUI.Application.Contracts.Services;
+﻿using Clients.MAUI.Application.Contracts.Services;
 using Clients.MAUI.Infrastructure.Extensions;
-using MediatR;
 using SharedLibrary.ApiMessages.Projects.Dto;
 using SharedLibrary.ApiMessages.Projects.P003;
 using SharedLibrary.ApiMessages.Projects.P004;
+using SharedLibrary.ApiMessages.Projects.P007;
 using SharedLibrary.ApiMessages.Projects.P011;
 using SharedLibrary.ApiMessages.Projects.P012;
 using SharedLibrary.ApiMessages.Projects.P013;
 using SharedLibrary.ApiMessages.Projects.P017;
 using SharedLibrary.ApiMessages.Projects.P018;
-using SharedLibrary.ApiMessages.Projects.P020;
 using SharedLibrary.Routes;
 using SharedLibrary.Wrapper;
 using System.Net.Http.Headers;
@@ -32,7 +30,8 @@ public class ProjectsService : IProjectService
 		var fileStreamContent = new StreamContent(File.OpenRead(filePath));
 		fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 		multipartFormContent.Add(fileStreamContent, name: "file", fileName: fileName);
-		var response = await _client.PostAsync(ProjectsEndpoints.GetReleasesRoute(projectId), multipartFormContent);
+		_client.AddOrUpdateProjectId(projectId.ToString());
+		var response = await _client.PostAsync(ProjectsEndpoints.GetReleasesRoute(), multipartFormContent);
 		return await response.ToResult();
 	}
 

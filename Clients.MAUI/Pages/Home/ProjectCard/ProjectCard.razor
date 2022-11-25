@@ -1,17 +1,30 @@
 ﻿@using SharedLibrary.ApiMessages.Projects.Dto
 <MudPaper Class=@Class Style=@Style Elevation="3">
-    <MudGrid Class="pa-3">
-        <MudItem xs="8">
-            <MudText Typo="Typo.h5">@Project.Name</MudText>
-            <MudText Typo="Typo.body2" Color="Color.Dark">@Project.LastModifiedOn</MudText>
+    <MudGrid Style="height: 100%" Class="pa-3">
+        <MudItem Class="align-self-start" xs="12">
+            <MudGrid>
+                <MudItem xs="8">
+                    @if(Project.Name?.Length >= 24)
+                    {
+                        <MudText Typo=Typo.h6>@Project.Name</MudText>
+                    }
+                    else
+                    {
+                        <MudText Typo=Typo.h5>@Project.Name</MudText>
+                    }
+                    <MudText Typo="Typo.body2" Color="Color.Dark">@Project.LastModifiedOn</MudText>
+                </MudItem>
+                <MudItem xs="3">
+                    <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick=@GoToProjectDetails>Подробнее</MudButton>
+                </MudItem>
+                <MudItem xs="12" Style="min-height: 95px">
+                    <MudText Typo="Typo.body1">@($"{string.Join("", Project.Description.Take(150))}...")</MudText>
+                </MudItem>
+            </MudGrid>
         </MudItem>
-        <MudItem xs="3">
-            <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick=@GoToProjectDetails>Подробнее</MudButton>
-        </MudItem>
-        <MudItem Style="min-height: 95px" xs="12">
-            <MudText Typo="Typo.body1">@($"{string.Join("", Project.Description.Take(150))}...")</MudText>
-        </MudItem>
-        <MudItem xs="12">
+
+
+        <MudItem Class="align-self-end" xs="12">
             @foreach (var tag in Project.Tags.Take(3))
             {
                 <MudChip>@tag.Value</MudChip>

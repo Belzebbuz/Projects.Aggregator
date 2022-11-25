@@ -6,9 +6,11 @@ using Infrastructure.Localization;
 using Infrastructure.Middleware;
 using Infrastructure.OpenApi;
 using Infrastructure.Security;
+using Infrastructure.TcpServers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 
 namespace Infrastructure;
 
@@ -26,7 +28,7 @@ public static class Startup
             .AddPaginationMiddleware()
             .AddLocalization(config)
             .AddOpenApiDocumentation(config)
-            .AddServices()
+			.AddServices()
             .AddCors(opt => opt.AddPolicy("CorsPolicy", policy => policy.AllowAnyHeader()
                                                                 .AllowAnyMethod()
                                                                 .AllowCredentials()));
@@ -34,11 +36,12 @@ public static class Startup
 
     public static async Task UseInfrastructure(this IApplicationBuilder app, IConfiguration config)
     {
+
         await app.InitDatabaseAsync<ApplicationDbContext>();
         app.UseLocalization(config);
         app.UseExceptionMiddleware();
         app.UseRouting();
-        app.UseCors("CorsPolicy");
+		app.UseCors("CorsPolicy");
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseCurrentUser();

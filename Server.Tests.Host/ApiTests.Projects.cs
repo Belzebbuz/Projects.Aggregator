@@ -1,15 +1,13 @@
-﻿using App.Shared.ApiMessages.Projects.P007;
-using Domain.Aggregators.Project;
-using SharedLibrary;
+﻿using SharedLibrary;
 using SharedLibrary.ApiMessages.Projects.Dto;
 using SharedLibrary.ApiMessages.Projects.P001;
 using SharedLibrary.ApiMessages.Projects.P003;
+using SharedLibrary.ApiMessages.Projects.P007;
 using SharedLibrary.ApiMessages.Projects.P011;
 using SharedLibrary.ApiMessages.Projects.P012;
 using SharedLibrary.ApiMessages.Projects.P013;
 using SharedLibrary.ApiMessages.Projects.P016;
 using SharedLibrary.ApiMessages.Projects.P017;
-using SharedLibrary.ApiMessages.Projects.P020;
 using SharedLibrary.Routes;
 using SharedLibrary.Wrapper;
 using Shouldly;
@@ -125,6 +123,7 @@ public partial class ApiTests : IDisposable
         uploadedRelease.CreatedByEmail.ShouldBe(_rootUserCredentials.Email);
 
         //Download uploaded file
+
         var downloadRequest = await _client.GetStreamAsync(ProjectsEndpoints.GetSingleReleaseRoute(Guid.Parse(appId), uploadedRelease.Id));
         if (!Directory.Exists(_downloadPath))
             Directory.CreateDirectory(_downloadPath);
@@ -485,8 +484,10 @@ public partial class ApiTests : IDisposable
         using var multipartFormContent = new MultipartFormDataContent();
         var fileStreamContent = new StreamContent(File.OpenRead(filePath));
         fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
-        multipartFormContent.Add(fileStreamContent, name: "file", fileName: "English-test-bot-1.zip");
-        return await _client.PostAsync(ProjectsEndpoints.GetReleasesRoute(Guid.Parse(appId)), multipartFormContent);
+        multipartFormContent.Add(fileStreamContent, name: appId, fileName: "English-test-bot-1.zip");
+        _client.DefaultRequestHeaders.Remove(Headers.ProjectId);
+        _client.DefaultRequestHeaders.Add(Headers.ProjectId, appId);
+        return await _client.PostAsync(ProjectsEndpoints.GetReleasesRoute(), multipartFormContent);
     }
 
     private async Task<string> ShouldSuccessCreateNewProject(string appName, string description, string systemRequirements,

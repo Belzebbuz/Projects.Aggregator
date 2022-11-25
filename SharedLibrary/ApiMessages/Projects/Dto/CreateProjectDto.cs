@@ -18,13 +18,13 @@ public class CreateProjectDtoValidator : AbstractValidator<CreateProjectDto>
 	{
 		RuleFor(x => x.Name)
 		   .Must(x => !string.IsNullOrWhiteSpace(x)).WithMessage(ValidateErrorMessages.NotEmpty)
-		   .Must(x => x.Length <= 30).WithMessage(ValidateErrorMessages.MustBeLessThan(30));
+		   .Must(x => x.Length <= 50).WithMessage(ValidateErrorMessages.MustBeLessThan(50));
 		RuleFor(x => x.Description)
 			.Must(x => !string.IsNullOrWhiteSpace(x)).WithMessage(ValidateErrorMessages.NotEmpty)
 			.Must(x => x.Length <= 400).WithMessage(ValidateErrorMessages.MustBeLessThan(400));
 		RuleFor(x => x.ExeFileName)
 			.Must(x => !string.IsNullOrWhiteSpace(x)).WithMessage(ValidateErrorMessages.NotEmpty)
-			.Must(x => x.Length <= 20).WithMessage(ValidateErrorMessages.MustBeLessThan(20));
+			.Must(x => x.Length <= 50).WithMessage(ValidateErrorMessages.MustBeLessThan(50));
 		RuleFor(x => x.SystemRequirements)
 			.Must(x => !string.IsNullOrWhiteSpace(x)).WithMessage(ValidateErrorMessages.NotEmpty)
 			.Must(x => x.Length <= 400).WithMessage(ValidateErrorMessages.MustBeLessThan(400));

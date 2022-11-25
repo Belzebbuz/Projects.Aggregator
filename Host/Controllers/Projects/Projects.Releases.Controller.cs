@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Net.Http.Headers;
 using NSwag.Annotations;
+using SharedLibrary;
 using SharedLibrary.ApiMessages.Projects.P005;
 using SharedLibrary.ApiMessages.Projects.P006;
 using SharedLibrary.ApiMessages.Projects.P009;
@@ -16,13 +19,42 @@ namespace Host.Controllers.Projects;
 /// </summary>
 public partial class ProjectsController
 {
-	[HttpPost("{projectId}/releases")]
+	[HttpPost("releases")]
 	[RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue)]
 	[RequestSizeLimit(long.MaxValue)]
 	[Authorize(Roles = SHRoles.Dev)]
 	[OpenApiOperation("Загрузить файл с новым релизом", "")]
-	public async Task<IResult> AddReleaseAsync(Guid projectId, IFormFile file)
-	   => await Mediator.Send(new P005Request(projectId, file.FileName, file.OpenReadStream()));
+	public async Task<IResult> AddReleaseAsync()
+	{
+		return await Mediator.Send(new P005Request());
+	}
+	public static async Task<int> ReadStream(Stream stream, int bufferSize)
+	{
+		var buffer = new byte[bufferSize];
+
+		int bytesRead;
+		int totalBytes = 0;
+
+		do
+		{
+			bytesRead = await stream.ReadAsync(buffer, 0, bufferSize);
+			totalBytes += bytesRead;
+		} while (bytesRead > 0);
+		return totalBytes;
+	}
+	private static string GetBoundary(string contentType)
+	{
+		if (contentType == null)
+			throw new ArgumentNullException(nameof(contentType));
+
+		var elements = contentType.Split(' ');
+		var element = elements.First(entry => entry.StartsWith("boundary="));
+		var boundary = element.Substring("boundary=".Length);
+
+		HeaderUtilities.RemoveQuotes(boundary);
+
+		return element;
+	}
 
 	[HttpDelete("{projectId}/releases/{releaseId}")]
 	[Authorize(Roles = SHRoles.Dev)]

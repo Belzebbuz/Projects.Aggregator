@@ -1,5 +1,4 @@
-﻿using App.Shared.ApiMessages.Projects.P007;
-using SharedLibrary.ApiMessages.Projects.Dto;
+﻿using SharedLibrary.ApiMessages.Projects.Dto;
 using SharedLibrary.ApiMessages.Projects.P001;
 using SharedLibrary.ApiMessages.Projects.P003;
 using SharedLibrary.ApiMessages.Projects.P004;
@@ -10,6 +9,7 @@ using SharedLibrary.ApiMessages.Projects.P016;
 using SharedLibrary.Wrapper;
 using SharedLibrary.ApiMessages.Projects.P017;
 using SharedLibrary.ApiMessages.Projects.P018;
+using SharedLibrary.ApiMessages.Projects.P007;
 
 namespace SharedLibrary.Routes;
 
@@ -63,7 +63,7 @@ public class ProjectsEndpoints
     /// </summary>
     /// <param name="projectId"></param>
     /// <returns></returns>
-    public static string GetReleasesRoute(Guid projectId) => $"{Base}/{projectId}/releases";
+    public static string GetReleasesRoute() => $"{Base}/releases";
 
     /// <summary>
     /// GET (Download)

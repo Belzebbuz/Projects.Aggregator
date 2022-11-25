@@ -1,9 +1,9 @@
-﻿using SharedLibrary.ApiMessages.Projects.Dto;
+﻿using SharedLibrary.ApiMessages.CommonDTO;
 
-namespace SharedLibrary.ApiMessages.Projects.P020
+namespace SharedLibrary.ApiMessages.Projects.Dto
 {
-	public class PatchNoteDto : AuditDto
-	{
-		public string Text { get; set; }
-	}
+    public class PatchNoteDto : AuditDto
+    {
+        public string Text { get; set; }
+    }
 }

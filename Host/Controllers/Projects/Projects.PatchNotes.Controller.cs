@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SharedLibrary.ApiMessages.Projects.Dto;
 using SharedLibrary.ApiMessages.Projects.P017;
 using SharedLibrary.ApiMessages.Projects.P018;
 using SharedLibrary.ApiMessages.Projects.P019;

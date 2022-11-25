@@ -24,4 +24,10 @@ public static class HttpClientExtensions
             client.DefaultRequestHeaders.Add(Headers.ItemsPerPage, itemsPerPage.ToString());
         }
     }
+
+    public static void AddOrUpdateProjectId(this HttpClient client, string projectId)
+    {
+        client.DefaultRequestHeaders.Remove(Headers.ProjectId);
+        client.DefaultRequestHeaders.Add(Headers.ProjectId, projectId);
+    }
 }

@@ -1,21 +1,30 @@
 ﻿using Application.Contracts.DI;
+using Microsoft.AspNetCore.Http;
 using SharedLibrary.Wrapper;
+using System.Security;
 
 namespace Application.Contracts.Services;
 
-public interface IFileStorageService : ITransientService
+public interface IFileStorageService : IScopedService
 {
     void DeleteFiles(IEnumerable<string> filePaths);
     void DeleteSingleFile(string url);
     FileStream DownloadAsync(string url);
-    Task<IResult<IZipUploadData>> UploadZipProjectAsync(Guid releaseId, string projectName, string fileName, string exeFile, Stream fileStream);
+
+    /// <summary>
+    /// Return file path of saved file
+    /// </summary>
+    /// <param name="folder"></param>
+    /// <returns></returns>
+    Task<IResult<string>> SaveFileStreamingAsync(string folder);
+
+    Task<IResult<IExeFileVersionInfo>> GetExeFileVersionAsync(string zipFilePath, string exeFileName);
 }
 
-public interface IZipUploadData
+public interface IExeFileVersionInfo 
 {
-    public string Version { get; }
-    public string GitSha { get; }
-    public string GitBranch { get; }
-    public string Url { get; }
+	public string Version { get; }
+	public string? GitSha { get; }
+	public string? GitBranch { get; }
 }
 

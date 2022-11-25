@@ -7,7 +7,7 @@ namespace Domain.Aggregators.Project;
 
 public sealed class Project : AuditableEntity, IAggregateRoot
 {
-    [MaxLength(30)]
+    [MaxLength(50)]
     public string Name { get; private set; }
 
     [MaxLength(400)]
@@ -16,7 +16,7 @@ public sealed class Project : AuditableEntity, IAggregateRoot
     [MaxLength(400)]
     public string SystemRequirements { get; private set; }
 
-    [MaxLength(20)]
+    [MaxLength(50)]
     public string ExeFileName { get; private set; }
 
     private ICollection<PatchNote> _patchNotes;

@@ -1,19 +1,27 @@
 using Application;
 using Infrastructure;
 using Infrastructure.Common;
+using Microsoft.Extensions.Hosting.WindowsServices;
 using Serilog;
 
 StaticLogger.EnsureInitialized();
 Log.Information("Server Booting Up...");
+if(WindowsServiceHelpers.IsWindowsService())
+    Directory.SetCurrentDirectory(AppContext.BaseDirectory);
 try
 {
-    var builder = WebApplication.CreateBuilder(args);
-    builder.Host.UseSerilog((_, config) =>
+	var options = new WebApplicationOptions
+	{
+		Args = args,
+		ContentRootPath = WindowsServiceHelpers.IsWindowsService() ? AppContext.BaseDirectory : default,
+	};
+	var builder = WebApplication.CreateBuilder(options);
+	builder.Host.UseWindowsService();
+	builder.Host.UseSerilog((_, config) =>
     {
         config.WriteTo.Console()
         .ReadFrom.Configuration(builder.Configuration);
     });
-	builder.Host.UseWindowsService();
 	builder.Services.AddControllers();
     builder.Services.AddApplication(builder.Configuration);
     builder.Services.AddInfrastructure(builder.Configuration);

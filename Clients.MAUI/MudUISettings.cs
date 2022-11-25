@@ -57,10 +57,10 @@ public static class MudUISettings
         H6 = new H6()
         {
             FontFamily = new[] { "Jura", "Helvetica", "Arial", "sans-serif" },
-            FontSize = "1.25rem",
+            FontSize = "1.15rem",
             FontWeight = 400,
-            LineHeight = 1.6,
-            LetterSpacing = ".0075em"
+            LineHeight = 1.2,
+            LetterSpacing = ".0035em"
         },
         Button = new MudBlazor.Button()
         {

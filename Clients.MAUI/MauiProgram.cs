@@ -44,7 +44,7 @@ public static class MauiProgram
                     if (winuiAppWindow.Presenter is OverlappedPresenter p)
                     {
                         //p.Maximize();
-                        p.IsAlwaysOnTop = true;
+                        p.IsAlwaysOnTop = false;
                         p.IsResizable = false;
                         p.IsMaximizable = false;
                         p.IsMinimizable = false;

@@ -6,8 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="BeetleX" Version="1.8.8.1115" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.2.2" />
 		<PackageReference Include="MediatR" Version="11.0.0" />
+		<PackageReference Include="protobuf-net" Version="3.1.25" />
 	</ItemGroup>
 
 </Project>

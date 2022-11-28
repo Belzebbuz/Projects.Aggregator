@@ -1,6 +1,6 @@
 ﻿using Application.Contracts.Repository;
 using Ardalis.Specification;
-using Domain.Aggregators.Project;
+using Domain.Aggregators.ProjectAggregate;
 using SharedLibrary.ApiMessages.Projects.P007;
 using SharedLibrary.Helpers;
 using SharedLibrary.Wrapper;
@@ -24,13 +24,13 @@ public class P007RequestHandler : IRequestHandler<P007Request, IResult>
 
         var tag = await _tagRepository.SingleOrDefaultAsync(new GetTagById(request.TagId));
         ThrowHelper.NotFoundEntity(tag, request.TagId.ToString(), nameof(Tag));
-
-        project.AddTag(tag);
+        
+        project!.AddTag(tag!);
         await _repository.SaveChangesAsync();
         return Result.Success();
     }
 
-    private class GetProjectById : Specification<Project>, ISingleResultSpecification<Project>
+    private sealed class GetProjectById : Specification<Project>, ISingleResultSpecification<Project>
     {
         internal GetProjectById(Guid projectId)
             => Query
@@ -40,7 +40,7 @@ public class P007RequestHandler : IRequestHandler<P007Request, IResult>
             .Include(x => x.Tags);
     }
 
-    private class GetTagById : Specification<Tag>, ISingleResultSpecification<Tag>
+    private sealed class GetTagById : Specification<Tag>, ISingleResultSpecification<Tag>
     {
         public GetTagById(Guid tagId)
             => Query.Where(x => x.Id == tagId);

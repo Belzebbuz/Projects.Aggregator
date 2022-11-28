@@ -1,5 +1,5 @@
 ﻿using Application.Contracts.Repository;
-using Domain.Aggregators.Project;
+using Domain.Aggregators.ProjectAggregate;
 using Infrastructure.Identity;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Identity;

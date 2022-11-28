@@ -1,6 +1,6 @@
 ﻿using Application.Contracts.Repository;
 using Application.Contracts.Services;
-using Domain.Aggregators.Bug;
+using Domain.Aggregators.BugAggregate;
 using SharedLibrary.ApiMessages.BugReports.BG001;
 using SharedLibrary.Wrapper;
 

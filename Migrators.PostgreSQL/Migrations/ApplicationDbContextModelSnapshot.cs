@@ -22,7 +22,7 @@ namespace Migrators.PostgreSQL.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Aggregators.Bug.BugReport", b =>
+            modelBuilder.Entity("Domain.Aggregators.BugAggregate.BugReport", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -67,7 +67,7 @@ namespace Migrators.PostgreSQL.Migrations
                     b.ToTable("BugReports");
                 });
 
-            modelBuilder.Entity("Domain.Aggregators.Project.PatchNote", b =>
+            modelBuilder.Entity("Domain.Aggregators.ProjectAggregate.PatchNote", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -113,7 +113,7 @@ namespace Migrators.PostgreSQL.Migrations
                     b.ToTable("PatchNote");
                 });
 
-            modelBuilder.Entity("Domain.Aggregators.Project.Project", b =>
+            modelBuilder.Entity("Domain.Aggregators.ProjectAggregate.ProjectAggregate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -173,7 +173,7 @@ namespace Migrators.PostgreSQL.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("Domain.Aggregators.Project.Release", b =>
+            modelBuilder.Entity("Domain.Aggregators.ProjectAggregate.Release", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -240,7 +240,7 @@ namespace Migrators.PostgreSQL.Migrations
                     b.ToTable("Releases");
                 });
 
-            modelBuilder.Entity("Domain.Aggregators.Project.Tag", b =>
+            modelBuilder.Entity("Domain.Aggregators.ProjectAggregate.Tag", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -524,16 +524,16 @@ namespace Migrators.PostgreSQL.Migrations
                     b.ToTable("ProjectTag");
                 });
 
-            modelBuilder.Entity("Domain.Aggregators.Project.PatchNote", b =>
+            modelBuilder.Entity("Domain.Aggregators.ProjectAggregate.PatchNote", b =>
                 {
-                    b.HasOne("Domain.Aggregators.Project.Project", null)
+                    b.HasOne("Domain.Aggregators.ProjectAggregate.ProjectAggregate", null)
                         .WithMany("PatchNotes")
                         .HasForeignKey("ProjectId");
                 });
 
-            modelBuilder.Entity("Domain.Aggregators.Project.Release", b =>
+            modelBuilder.Entity("Domain.Aggregators.ProjectAggregate.Release", b =>
                 {
-                    b.HasOne("Domain.Aggregators.Project.Project", null)
+                    b.HasOne("Domain.Aggregators.ProjectAggregate.ProjectAggregate", null)
                         .WithMany("Releases")
                         .HasForeignKey("ProjectId");
                 });
@@ -591,20 +591,20 @@ namespace Migrators.PostgreSQL.Migrations
 
             modelBuilder.Entity("ProjectTag", b =>
                 {
-                    b.HasOne("Domain.Aggregators.Project.Project", null)
+                    b.HasOne("Domain.Aggregators.ProjectAggregate.ProjectAggregate", null)
                         .WithMany()
                         .HasForeignKey("ReleasesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Aggregators.Project.Tag", null)
+                    b.HasOne("Domain.Aggregators.ProjectAggregate.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregators.Project.Project", b =>
+            modelBuilder.Entity("Domain.Aggregators.ProjectAggregate.ProjectAggregate", b =>
                 {
                     b.Navigation("PatchNotes");
 

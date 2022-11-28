@@ -1,8 +1,8 @@
 ﻿using Application.Contracts.Identity;
 using Application.Contracts.Services;
 using Application.Contracts.Services.Events;
-using Domain.Aggregators.Bug;
-using Domain.Aggregators.Project;
+using Domain.Aggregators.BugAggregate;
+using Domain.Aggregators.ProjectAggregate;
 using Domain.Base;
 using Infrastructure.Auditing;
 using Infrastructure.Identity;

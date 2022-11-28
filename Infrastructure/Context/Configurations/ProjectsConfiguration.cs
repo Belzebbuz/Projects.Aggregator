@@ -1,4 +1,4 @@
-﻿using Domain.Aggregators.Project;
+﻿using Domain.Aggregators.ProjectAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

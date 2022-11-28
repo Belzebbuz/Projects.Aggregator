@@ -1,7 +1,7 @@
 ﻿using Application.Contracts.Repository;
 using Application.Contracts.Services;
 using Ardalis.Specification;
-using Domain.Aggregators.Project;
+using Domain.Aggregators.ProjectAggregate;
 using SharedLibrary.ApiMessages.Projects.P006;
 using SharedLibrary.Helpers;
 using SharedLibrary.Wrapper;
@@ -23,14 +23,14 @@ public class P006RequestHandler : IRequestHandler<P006Request, IResult>
         var project = await _repository.SingleOrDefaultAsync(new GetSingleProjectById(request.ProjectId));
         ThrowHelper.NotFoundEntity(project, request.ProjectId.ToString(), nameof(Project));
 
-        var release = project.GetRelease(request.ReleaseId);
+        var release = project!.GetRelease(request.ReleaseId);
         _storageService.DeleteSingleFile(release.Url);
         project.RemoveRelease(release.Id);
         await _repository.UpdateAsync(project);
         return Result.Success();
     }
 
-    private class GetSingleProjectById : Specification<Project>, ISingleResultSpecification<Project>
+    private sealed class GetSingleProjectById : Specification<Project>, ISingleResultSpecification<Project>
     {
         internal GetSingleProjectById(Guid Id)
             => Query

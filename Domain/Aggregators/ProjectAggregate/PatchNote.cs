@@ -1,7 +1,7 @@
 ﻿using Domain.Base;
 using SharedLibrary.Helpers;
 
-namespace Domain.Aggregators.Project;
+namespace Domain.Aggregators.ProjectAggregate;
 
 public class PatchNote : AuditableEntity
 {

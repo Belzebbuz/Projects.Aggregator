@@ -1,7 +1,7 @@
 ﻿using Domain.Base;
 using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Aggregators.Project;
+namespace Domain.Aggregators.ProjectAggregate;
 
 public class Tag : BaseEntity, IAggregateRoot
 {

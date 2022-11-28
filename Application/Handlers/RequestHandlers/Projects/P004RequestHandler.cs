@@ -1,6 +1,6 @@
 ﻿using Application.Contracts.Repository;
 using Ardalis.Specification;
-using Domain.Aggregators.Project;
+using Domain.Aggregators.ProjectAggregate;
 using SharedLibrary.ApiMessages.Projects.P004;
 using SharedLibrary.Helpers;
 using SharedLibrary.Wrapper;
@@ -23,18 +23,18 @@ public class P004RequestHandler : IRequestHandler<P004Request, IResult>
 
         ThrowHelper.NotFoundEntity(project, request.Id.ToString(), nameof(Project));
 
-		var tagsWithId = request.Tags.Where(x => x.Id != default).Select(x => x.Id).ToList();
-		var namesOfTagsWithOutId = request.Tags.Where(x => x.Id == default).Select(x => x.Value).ToList();
-		var tags = await _tagRepository.ListAsync(new GetTagsByIds(tagsWithId));
-		tags.AddRange(namesOfTagsWithOutId.Select(x => Tag.Create(x)));
+        var tagsWithId = request.Tags.Where(x => x.Id != Guid.Empty).Select(x => x.Id).ToList();
+        var namesOfTagsWithOutId = request.Tags.Where(x => x.Id == Guid.Empty).Select(x => x.Value).ToList();
+        var tags = await _tagRepository.ListAsync(new GetTagsByIds(tagsWithId));
+        tags.AddRange(namesOfTagsWithOutId.Select(x => Tag.Create(x)));
 
-		project.Update(request.Name, request.Description, request.ExeFileName, request.SystemRequirements);
+        project.Update(request.Name, request.Description, request.ExeFileName, request.SystemRequirements);
         project.UpdateTags(tags);
         await _repository.SaveChangesAsync();
         return Result.Success();
     }
 
-    private class GetProjectById : Specification<Project>, ISingleResultSpecification<Project>
+    private sealed class GetProjectById : Specification<Project>, ISingleResultSpecification<Project>
     {
         public GetProjectById(Guid Id)
             => Query
@@ -42,7 +42,7 @@ public class P004RequestHandler : IRequestHandler<P004Request, IResult>
             .Where(x => x.Id == Id);
     }
 
-    private class GetTagsByIds : Specification<Tag>
+    private sealed class GetTagsByIds : Specification<Tag>
     {
         public GetTagsByIds(ICollection<Guid> tagsIds)
             => Query

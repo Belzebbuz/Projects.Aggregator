@@ -22,7 +22,7 @@ namespace Migrators.SQLServer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Domain.Aggregators.Project.Project", b =>
+            modelBuilder.Entity("Domain.Aggregators.ProjectAggregate.ProjectAggregate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,7 +82,7 @@ namespace Migrators.SQLServer.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("Domain.Aggregators.Project.Release", b =>
+            modelBuilder.Entity("Domain.Aggregators.ProjectAggregate.Release", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -149,7 +149,7 @@ namespace Migrators.SQLServer.Migrations
                     b.ToTable("Releases");
                 });
 
-            modelBuilder.Entity("Domain.Aggregators.Project.Tag", b =>
+            modelBuilder.Entity("Domain.Aggregators.ProjectAggregate.Tag", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -435,9 +435,9 @@ namespace Migrators.SQLServer.Migrations
                     b.ToTable("ProjectTag");
                 });
 
-            modelBuilder.Entity("Domain.Aggregators.Project.Release", b =>
+            modelBuilder.Entity("Domain.Aggregators.ProjectAggregate.Release", b =>
                 {
-                    b.HasOne("Domain.Aggregators.Project.Project", null)
+                    b.HasOne("Domain.Aggregators.ProjectAggregate.ProjectAggregate", null)
                         .WithMany("Releases")
                         .HasForeignKey("ProjectId");
                 });
@@ -495,20 +495,20 @@ namespace Migrators.SQLServer.Migrations
 
             modelBuilder.Entity("ProjectTag", b =>
                 {
-                    b.HasOne("Domain.Aggregators.Project.Project", null)
+                    b.HasOne("Domain.Aggregators.ProjectAggregate.ProjectAggregate", null)
                         .WithMany()
                         .HasForeignKey("ReleasesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Aggregators.Project.Tag", null)
+                    b.HasOne("Domain.Aggregators.ProjectAggregate.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Aggregators.Project.Project", b =>
+            modelBuilder.Entity("Domain.Aggregators.ProjectAggregate.ProjectAggregate", b =>
                 {
                     b.Navigation("Releases");
                 });

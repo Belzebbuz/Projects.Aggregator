@@ -1,5 +1,5 @@
 ﻿using Application.Contracts.Services;
-using Domain.Aggregators.Project;
+using Domain.Aggregators.ProjectAggregate;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;

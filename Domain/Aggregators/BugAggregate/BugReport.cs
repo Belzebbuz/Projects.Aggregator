@@ -1,9 +1,8 @@
 ﻿using Domain.Base;
 using SharedLibrary.Helpers;
-using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Aggregators.Bug;
+namespace Domain.Aggregators.BugAggregate;
 
 public class BugReport : AuditableEntity, IAggregateRoot
 {

@@ -1,7 +1,8 @@
 ﻿using Application.Contracts.Repository;
 using Ardalis.Specification;
-using Domain.Aggregators.Project;
+using Domain.Aggregators.ProjectAggregate;
 using Mapster;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using SharedLibrary.ApiMessages.Projects.P003;
 using SharedLibrary.Wrapper;
 
@@ -21,25 +22,25 @@ public class P003RequestHandler : IRequestHandler<P003Request, IResult>
     {
         var exists = await _repository.AnyAsync(new GetProjectByName(request.Name));
         if (exists)
-            return Result.Fail($"Project with Name: \"{request.Name}\" already exists!");
+            return Result.Fail($"ProjectAggregate with Name: \"{request.Name}\" already exists!");
 
-        var tagsWithId = request.Tags.Where(x => x.Id != default).Select(x => x.Id).ToList();
-        var namesOfTagsWithOutId = request.Tags.Where(x => x.Id == default).Select(x => x.Value).ToList();
-		var tags = await _tagRepository.ListAsync(new GetTagsByIds(tagsWithId));
+        var tagsWithId = request.Tags.Where(x => x.Id != Guid.Empty).Select(x => x.Id).ToList();
+        var namesOfTagsWithOutId = request.Tags.Where(x => x.Id == Guid.Empty).Select(x => x.Value).ToList();
+        var tags = await _tagRepository.ListAsync(new GetTagsByIds(tagsWithId));
         tags.AddRange(namesOfTagsWithOutId.Select(x => Tag.Create(x)));
         var project = Project.Create(request.Name, request.Description, request.ExeFileName, request.SystemRequirements, tags);
         await _repository.AddAsync(project);
         return Result.Success(project.Id.ToString());
     }
 
-    private class GetProjectByName : Specification<Project>
+    private sealed class GetProjectByName : Specification<Project>
     {
         public GetProjectByName(string name)
          => Query
             .Where(x => x.Name == name);
     }
 
-    private class GetTagsByIds : Specification<Tag>
+    private sealed class GetTagsByIds : Specification<Tag>
     {
         public GetTagsByIds(ICollection<Guid> tags)
             => Query

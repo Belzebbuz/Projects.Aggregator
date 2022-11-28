@@ -1,7 +1,7 @@
 ﻿using Application.Contracts.Repository;
 using Application.Contracts.Services;
 using Ardalis.Specification;
-using Domain.Aggregators.Project;
+using Domain.Aggregators.ProjectAggregate;
 using Mapster;
 using SharedLibrary.ApiMessages.Projects.Dto;
 using SharedLibrary.ApiMessages.Projects.P002;
@@ -30,7 +30,7 @@ public class P002RequestHandler : IRequestHandler<P002Request, PaginatedResult<P
         return PaginatedResult<ProjectShortDto>.Success(projectsDto, count, pagination.Page, pagination.RecordsPerPage);
     }
 
-    public class GetProjects : Specification<Project>
+    private sealed class GetProjects : Specification<Project>
     {
         public GetProjects(Pagination pagination) =>
             Query

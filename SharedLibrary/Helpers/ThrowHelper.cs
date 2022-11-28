@@ -34,7 +34,7 @@ public static class ThrowHelper
     /// <param name="entityId"></param>
     /// <param name="entityName"></param>
     /// <exception cref="EntityNotFoundException"></exception>
-    public static void NotFoundEntity(object value, string entityId, string entityName)
+    public static void NotFoundEntity(object? value, string entityId, string entityName)
     {
         if (value == null)
             throw new EntityNotFoundException(entityId, entityName);

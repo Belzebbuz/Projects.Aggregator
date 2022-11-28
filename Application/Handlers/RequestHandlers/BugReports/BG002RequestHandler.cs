@@ -1,7 +1,7 @@
 ﻿using Application.Contracts.Repository;
 using Application.Contracts.Services;
 using Ardalis.Specification;
-using Domain.Aggregators.Bug;
+using Domain.Aggregators.BugAggregate;
 using Mapster;
 using SharedLibrary.ApiMessages.BugReports.BG002;
 using SharedLibrary.ApiMessages.BugReports.Dto;

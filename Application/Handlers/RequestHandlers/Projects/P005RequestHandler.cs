@@ -2,7 +2,7 @@
 using Application.Contracts.Services;
 using Application.Options;
 using Ardalis.Specification;
-using Domain.Aggregators.Project;
+using Domain.Aggregators.ProjectAggregate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -31,7 +31,7 @@ public class P005RequestHandler : IRequestHandler<P005Request, IResult>
 		_repository = repository;
 		_logger = logger;
 		_releaseOptions = options.Value;
-		_request = httpContextAccessor.HttpContext.Request;
+		_request = httpContextAccessor.HttpContext!.Request;
 	}
 	public async Task<IResult> Handle(P005Request request, CancellationToken cancellationToken)
 	{
@@ -45,7 +45,7 @@ public class P005RequestHandler : IRequestHandler<P005Request, IResult>
 		if (!result.Succeeded)
 			return Result.Fail(result.Messages);
 
-		var exeFileInfoResult = await _storageService.GetExeFileVersionAsync(result.Data, project.ExeFileName);
+		var exeFileInfoResult = await _storageService.GetExeFileVersionAsync(result.Data, project!.ExeFileName);
 		if (!exeFileInfoResult.Succeeded)
 		{
 			_storageService.DeleteSingleFile(result.Data);
@@ -74,7 +74,7 @@ public class P005RequestHandler : IRequestHandler<P005Request, IResult>
 		}
 	}
 
-	private class GetProjectById : Specification<Project>, ISingleResultSpecification<Project>
+	private sealed class GetProjectById : Specification<Project>, ISingleResultSpecification<Project>
 	{
 		public GetProjectById(Guid projectId)
 			=> Query

@@ -1,4 +1,4 @@
-﻿namespace Domain.Aggregators.Project.Enums;
+﻿namespace Domain.Aggregators.ProjectAggregate.Enums;
 
 public enum OsPlatform : byte
 {

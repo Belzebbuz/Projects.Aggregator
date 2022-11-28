@@ -1,6 +1,6 @@
 ﻿using Application.Contracts.Repository;
 using Ardalis.Specification;
-using Domain.Aggregators.Project;
+using Domain.Aggregators.ProjectAggregate;
 using SharedLibrary.ApiMessages.Projects.P008;
 using SharedLibrary.Helpers;
 using SharedLibrary.Wrapper;

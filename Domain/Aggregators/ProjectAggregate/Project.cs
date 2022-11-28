@@ -3,7 +3,7 @@ using SharedLibrary.Helpers;
 using SharedLibrary.Wrapper;
 using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Aggregators.Project;
+namespace Domain.Aggregators.ProjectAggregate;
 
 public sealed class Project : AuditableEntity, IAggregateRoot
 {

@@ -15,7 +15,7 @@ namespace SharedLibrary.Routes;
 /// All responses wrapped into <see cref="IResult"/>
 /// </para>
 /// </summary>
-public class UsersEndpoints
+public static class UsersEndpoints
 {
     /// <summary>
     /// Root path for users API
@@ -42,42 +42,32 @@ public class UsersEndpoints
     private const string _selfRegister = "self-register";
     private const string _toggleStatus = "toggle-status";
     private const string _changePassword = "change-password";
-	/// <summary>
-	/// POST - Assign new roles for user
-	/// <para>
-	/// Request - <see cref="ID008Request"/>
-	/// </para>
-	/// </summary>
-	/// <returns></returns>
-	public static string GetRolesRoute() => $"{Base}/{_roles}";
+    /// <summary>
+    /// POST - Assign new roles for user
+    /// <br/> Request - <see cref="ID008Request"/>
+    /// </summary>
+    /// <returns></returns>
+    public static string GetRolesRoute() => $"{Base}/{_roles}";
 
     /// <summary>
     /// GET - Get single user info
-    /// <para>
-    ///	Response - <see cref="ID007Response"/>
-    /// </para>
+    /// <br/> Response - <see cref="ID007Response"/>
     /// </summary>
     /// <param name="id">User Id</param>
     /// <returns></returns>
     public static string GetUserRoute(string id) => $"{Base}/{id}";
 
-	/// <summary>
-	/// POST - Get single user info
-	/// <para>
-	///	Request - <see cref="ID010Request"/>
-	/// </para>
-	/// <para>
-	/// Response - <see cref="PaginatedResult{T}"/> <see cref="UserDto"/>
-	/// </para>
-	/// </summary>
-	/// <returns></returns>
-	public static string GetUserByFilterRoute() => $"{Base}/search";
+    /// <summary>
+    /// POST - Get single user info
+    /// <br/> Request - <see cref="ID010Request"/>
+    /// <br/>Response - <see cref="PaginatedResult{T}"/> <see cref="UserDto"/>
+    /// </summary>
+    /// <returns></returns>
+    public static string GetUserByFilterRoute() => $"{Base}/search";
 
 	/// <summary>
-	/// GET - Get user roles
-	/// <para>
-	/// Response - <see cref="ID004Response"/>
-	/// </para>
+	/// GET - Get users roles
+	/// <br/> Response - <see cref="ID004Response"/>
 	/// </summary>
 	/// <param name="id">User Id</param>
 	/// <returns></returns>
@@ -85,28 +75,22 @@ public class UsersEndpoints
 
     /// <summary>
     /// POST - Toogle user IsActive status
-    /// <para>
-    /// Request - <see cref="ID006Request"/>
-    /// </para>
+    /// <br/> Request - <see cref="ID006Request"/>
     /// </summary>
     /// <returns></returns>
     public static string GetToggleUserStatusRoute() => $"{Base}/{_toggleStatus}";
 
     /// <summary>
     /// POST - Allow anonymous create user
-    /// <para>
-    /// Request - <see cref="ID005Request"/>
-    /// </para>
+    /// <br/> Request - <see cref="ID005Request"/>
     /// </summary>
     /// <returns></returns>
     public static string GetSelfRegisterRoute() => $"{Base}/{_selfRegister}";
 
     /// <summary>
-    /// POST - change current user password
+    /// POST - change current user password. 
+    /// <br/>Request - <see cref="ID009Request"/>
     /// </summary>
-    /// <para>
-    /// Request - <see cref="ID009Request"/>
-    /// </para>
     /// <returns></returns>
     public static string GetChangePasswordRoute() => $"{Base}/{_changePassword}";
 }

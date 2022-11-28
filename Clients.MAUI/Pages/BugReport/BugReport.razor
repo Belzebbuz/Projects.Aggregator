@@ -1,6 +1,7 @@
 ﻿@page "/bugReport"
+@using SharedLibrary.Authentication
 
-<EditForm class="fade-in d-flex align-start justify-center pt-5" style="height: 100vh" Model="@_bugRequest" OnValidSubmit="SubmitAsync">
+<EditForm class="fade-in d-flex align-start justify-center pt-5" style="height: 50vh" Model="@_bugRequest" OnValidSubmit="SubmitAsync">
     <FluentValidationValidator @ref="@_fluentValidationValidator" />
     <MudPaper Elevation="3" Class="d-flex align-center justify-center pa-5" Width="70vw">
         <MudGrid Class="d-flex align-center justify-center">
@@ -13,5 +14,27 @@
             </MudItem>
         </MudGrid>
     </MudPaper>
-
 </EditForm>
+
+<MudContainer Style="width: 80vw" Class="d-flex align-center justify-center">
+    <AuthorizeView Roles="@SHRoles.Admin">
+        <Authorized>
+            <MudPaper Elevation="3" Class="fade-in d-flex align-center justify-center pa-5">
+                <MudGrid>
+                    @foreach (var report in _reports)
+                    {
+                        <MudItem xs="12">
+                            <MudStack>
+                                <MudText>@($"{report.CreatedByEmail}, {report.LastModifiedOn}")</MudText>
+                                    <MudText>@report.Text</MudText>
+                                </MudStack>
+                                <MudDivider Class="mt-2" />
+                            </MudItem>
+                    }
+                </MudGrid>
+            </MudPaper>
+        </Authorized>
+    </AuthorizeView>
+</MudContainer>
+
+

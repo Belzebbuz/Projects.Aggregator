@@ -1,19 +1,15 @@
 ﻿using Application.Contracts.Services;
-using Domain.Aggregators.ProjectAggregate;
-using MediatR;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
-using SharedLibrary;
 using SharedLibrary.Helpers;
 using SharedLibrary.Wrapper;
 using System.Diagnostics;
-using System.Drawing.Text;
-using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net.Mime;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Infrastructure.Common.Services.FileStorage;
 
@@ -33,12 +29,11 @@ internal class FileStorageLocalService : IFileStorageService
 	}
 	public void DeleteFiles(IEnumerable<string> filePaths)
 	{
-		foreach (var url in filePaths)
-		{
-			if (File.Exists(url))
-				File.Delete(url);
-		}
-	}
+        foreach (string? url in filePaths.Where(url => File.Exists(url)))
+        {
+            File.Delete(url);
+        }
+    }
 
 	public void DeleteSingleFile(string url)
 	{
@@ -56,7 +51,7 @@ internal class FileStorageLocalService : IFileStorageService
 	{
 		try
 		{
-			var request = _httpContext.HttpContext.Request;
+			var request = _httpContext.HttpContext!.Request;
 			var boundary = HeaderUtilities.RemoveQuotes(
 				MediaTypeHeaderValue.Parse(request.ContentType).Boundary
 			).Value;
@@ -91,19 +86,18 @@ internal class FileStorageLocalService : IFileStorageService
 				var hasContentDispositionHeader = ContentDispositionHeaderValue.TryParse(
 					section.ContentDisposition, out var contentDisposition
 				);
-				if (hasContentDispositionHeader)
-				{
-					if (contentDisposition.DispositionType.Equals("form-data") &&
-					(!string.IsNullOrEmpty(contentDisposition.FileName.Value) ||
-					!string.IsNullOrEmpty(contentDisposition.FileNameStar.Value)))
-					{
-						fileFullPath = CreateUploadFileFullPath(folderPath, contentDisposition.FileName.Value);
-						await using var fs = File.Create(fileFullPath);
-						await section.Body.CopyToAsync(fs);
-						await fs.FlushAsync();
-					}
-				}
-				section = await reader.ReadNextSectionAsync();
+                ThrowHelper.NotNull(contentDisposition, nameof(section.ContentDisposition));
+
+                if (hasContentDispositionHeader && contentDisposition!.DispositionType.Equals("form-data") &&
+                    (!string.IsNullOrEmpty(contentDisposition.FileName.Value) ||
+                    !string.IsNullOrEmpty(contentDisposition.FileNameStar.Value)))
+                {
+                    fileFullPath = CreateUploadFileFullPath(folderPath, contentDisposition.FileName.Value);
+                    await using var fs = File.Create(fileFullPath);
+                    await section.Body.CopyToAsync(fs);
+                    await fs.FlushAsync();
+                }
+                section = await reader.ReadNextSectionAsync();
 			}
 			return Result<string>.Success(data: fileFullPath);
 		}
@@ -122,7 +116,7 @@ internal class FileStorageLocalService : IFileStorageService
 
 	public async Task<IResult<IExeFileVersionInfo>> GetExeFileVersionAsync(string zipFilePath, string exeFileName)
 	{
-		try
+        try
 		{
 			if (!Directory.Exists(_tempFolder))
 				Directory.CreateDirectory(_tempFolder);

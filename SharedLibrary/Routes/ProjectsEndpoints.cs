@@ -19,7 +19,7 @@ namespace SharedLibrary.Routes;
 /// All responses wrapped into <see cref="IResult"/>
 /// </para>
 /// </summary>
-public class ProjectsEndpoints
+public static class ProjectsEndpoints
 {
     /// <summary>
     /// Base path to projects API
@@ -59,7 +59,7 @@ public class ProjectsEndpoints
     public static string GetProjectRoute(Guid id) => $"{Base}/{id}";
 
     /// <summary>
-    /// POST
+    /// POST - Multipart form data .zip file
     /// </summary>
     /// <param name="projectId"></param>
     /// <returns></returns>

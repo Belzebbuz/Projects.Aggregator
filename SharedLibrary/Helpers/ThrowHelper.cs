@@ -59,7 +59,7 @@ public static class ThrowHelper
     /// <param name="value"></param>
     /// <param name="entityName"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public static void NotNull(object value, string entityName)
+    public static void NotNull(object? value, string entityName)
     {
         if (value == null)
             throw new ArgumentNullException(entityName);

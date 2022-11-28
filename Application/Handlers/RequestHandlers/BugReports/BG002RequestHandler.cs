@@ -33,7 +33,7 @@ public class BG002RequestHandler : IRequestHandler<BG002Request, PaginatedResult
 		public GetBugReports(Pagination pagination)
 		{
 			Query
-				.OrderBy(x => x.LastModifiedOn)
+				.OrderByDescending(x => x.LastModifiedOn)
 				.Skip((pagination.Page - 1) * pagination.RecordsPerPage)
 				.Take(pagination.RecordsPerPage)
 				.Adapt<BugReportDto>();

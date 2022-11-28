@@ -19,9 +19,8 @@ public partial class ProjectsController
 	[Authorize(Roles = SHRoles.Admin)]
 	[OpenApiOperation("Получить список патч-ноутов. ", OpenApiDescriptonConstants.PerPageDescription)]
 	public async Task<PaginatedResult<PatchNoteDto>> GetPatchNoteAsync(Guid projectId)
-	{
-		return await Mediator.Send(new P020Request() { ProjectId = projectId});
-	}
+	    => await Mediator.Send(new P020Request() { ProjectId = projectId});
+	
 
 	[HttpPost("{projectId}/patchNotes")]
     [Authorize(Roles = SHRoles.Admin)]
@@ -49,7 +48,5 @@ public partial class ProjectsController
 	[Authorize(Roles = SHRoles.Admin)]
 	[OpenApiOperation("Удалить патч-ноут", "")]
 	public async Task<IResult> DeletePatchNoteAsync(Guid projectId, Guid patchNoteId)
-	{
-		return await Mediator.Send(new P019Request(projectId, patchNoteId));
-	}
+	    => await Mediator.Send(new P019Request(projectId, patchNoteId));
 }

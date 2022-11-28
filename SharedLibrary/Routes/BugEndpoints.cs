@@ -3,8 +3,13 @@ using SharedLibrary.ApiMessages.BugReports.Dto;
 using SharedLibrary.Wrapper;
 
 namespace SharedLibrary.Routes;
-
-public class BugEndpoints
+/// <summary>
+/// Contains projects API endpoints
+/// <para>
+/// All responses wrapped into <see cref="IResult"/>
+/// </para>
+/// </summary>
+public static class BugEndpoints
 {
 	/// <summary>
 	/// POST - Request <see cref="BG001Request"/>

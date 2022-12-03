@@ -28,33 +28,6 @@ public partial class ProjectsController
 	{
 		return await Mediator.Send(new P005Request());
 	}
-	public static async Task<int> ReadStream(Stream stream, int bufferSize)
-	{
-		var buffer = new byte[bufferSize];
-
-		int bytesRead;
-		int totalBytes = 0;
-
-		do
-		{
-			bytesRead = await stream.ReadAsync(buffer, 0, bufferSize);
-			totalBytes += bytesRead;
-		} while (bytesRead > 0);
-		return totalBytes;
-	}
-	private static string GetBoundary(string contentType)
-	{
-		if (contentType == null)
-			throw new ArgumentNullException(nameof(contentType));
-
-		var elements = contentType.Split(' ');
-		var element = elements.First(entry => entry.StartsWith("boundary="));
-		var boundary = element.Substring("boundary=".Length);
-
-		HeaderUtilities.RemoveQuotes(boundary);
-
-		return element;
-	}
 
 	[HttpDelete("{projectId}/releases/{releaseId}")]
 	[Authorize(Roles = SHRoles.Dev)]

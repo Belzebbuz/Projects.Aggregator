@@ -111,7 +111,8 @@ internal class FileStorageLocalService : IFileStorageService
 	private string CreateUploadFileFullPath(string folderPath, string fileName)
 	{
 		var fileExtension = Path.GetExtension(fileName);
-		return Path.Combine(folderPath, $"{Guid.NewGuid()}{fileExtension}");
+        var guid = Guid.NewGuid().ToString();
+        return Path.Combine(folderPath, $"{guid}{fileExtension}");
 	}
 
 	public async Task<IResult<IExeFileVersionInfo>> GetExeFileVersionAsync(string zipFilePath, string exeFileName)
